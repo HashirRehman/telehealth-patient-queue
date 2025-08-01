@@ -1,8 +1,7 @@
 'use client'
 
-import { Card, CardContent } from '@/components/ui/card'
-import { Badge } from '@/components/ui/badge'
-import { Button } from '@/components/ui/button'
+import React, { memo } from 'react'
+import { Card, CardContent, Badge, Button } from '@/components/ui'
 import { useRouter } from 'next/navigation'
 import type { BookingWithPatient } from '@/lib/database.types'
 import {
@@ -12,15 +11,14 @@ import {
   PhoneIcon,
   MailIcon,
   FileTextIcon,
-  VideoIcon,
-  BuildingIcon,
-  CheckCircleIcon,
-  XCircleIcon,
-  AlertCircleIcon,
-  ClipboardIcon,
   TimerIcon,
-  MapPinIcon
+  MapPinIcon,
+  VideoIcon,
+  AlertCircleIcon,
+  CheckCircleIcon,
+  BuildingIcon
 } from 'lucide-react'
+import { getStatusConfig } from '@/lib/constants/status'
 
 interface PatientTelehealthCardProps {
   booking: BookingWithPatient
@@ -28,58 +26,32 @@ interface PatientTelehealthCardProps {
   isPatientView?: boolean
 }
 
-const statusConfig = {
-  'pending': { 
-    color: 'bg-amber-50 text-amber-700 border-amber-200', 
-    icon: AlertCircleIcon,
-    label: 'Pending'
-  },
-  'confirmed': { 
-    color: 'bg-blue-50 text-blue-700 border-blue-200', 
-    icon: CheckCircleIcon,
-    label: 'Confirmed'
-  },
-  'intake': { 
-    color: 'bg-purple-50 text-purple-700 border-purple-200', 
-    icon: ClipboardIcon,
-    label: 'In Intake'
-  },
-  'ready-for-provider': { 
-    color: 'bg-green-50 text-green-700 border-green-200', 
-    icon: CheckCircleIcon,
-    label: 'Ready for Provider'
-  },
-  'provider': { 
-    color: 'bg-orange-50 text-orange-700 border-orange-200', 
-    icon: VideoIcon,
-    label: 'With Provider'
-  },
-  'ready-for-discharge': { 
-    color: 'bg-indigo-50 text-indigo-700 border-indigo-200', 
-    icon: CheckCircleIcon,
-    label: 'Ready for Discharge'
-  },
-  'discharged': { 
-    color: 'bg-gray-50 text-gray-700 border-gray-200', 
-    icon: CheckCircleIcon,
-    label: 'Discharged'
-  },
-  'cancelled': { 
-    color: 'bg-red-50 text-red-700 border-red-200', 
-    icon: XCircleIcon,
-    label: 'Cancelled'
-  }
-}
-
-export function PatientTelehealthCard({ 
+const PatientTelehealthCard = memo(function PatientTelehealthCard({ 
   booking, 
   showActions = true, 
   isPatientView = false 
 }: PatientTelehealthCardProps) {
   const router = useRouter()
 
-  const getStatusColor = (status: string) => {
-    return statusConfig[status as keyof typeof statusConfig]?.color || 'bg-gray-100 text-gray-800 border-gray-200'
+  // Get configurations
+  const statusConfig = getStatusConfig(booking.status)
+  const StatusIcon = statusConfig.icon
+
+  // Utility functions
+  const getBookingTypeConfig = (type: string) => {
+    const configs = {
+      online: {
+        label: 'Telehealth',
+        icon: '📱',
+        color: 'bg-emerald-50 text-emerald-700 border-emerald-200'
+      },
+      'pre-booked': {
+        label: 'In-Person',
+        icon: '🏥',
+        color: 'bg-blue-50 text-blue-700 border-blue-200'
+      }
+    }
+    return configs[type as keyof typeof configs] || configs.online
   }
 
   const formatAppointmentType = (booking: BookingWithPatient) => {
@@ -94,6 +66,22 @@ export function PatientTelehealthCard({
     return `Booked ${time}`
   }
 
+  const formatDate = (date: string) => {
+    return new Date(date).toLocaleDateString('en-US', {
+      month: 'short',
+      day: 'numeric',
+      year: 'numeric'
+    })
+  }
+
+  const formatTime = (time: string) => {
+    return new Date(`1970-01-01T${time}`).toLocaleTimeString('en-US', {
+      hour: 'numeric',
+      minute: '2-digit',
+      hour12: true
+    })
+  }
+
   const calculateWaitTime = (booking: BookingWithPatient) => {
     const now = new Date()
     const appointmentTime = new Date(`${booking.appointment_date}T${booking.appointment_time}`)
@@ -104,6 +92,9 @@ export function PatientTelehealthCard({
     
     return { currentWait, totalWait }
   }
+
+  const typeConfig = getBookingTypeConfig(booking.booking_type)
+  const waitTimes = calculateWaitTime(booking)
 
   const getPatientAction = () => {
     switch (booking.status) {
@@ -169,26 +160,6 @@ export function PatientTelehealthCard({
     return null
   }
 
-  const StatusIcon = statusConfig[booking.status as keyof typeof statusConfig]?.icon || AlertCircleIcon
-  const statusStyle = statusConfig[booking.status as keyof typeof statusConfig] || statusConfig['pending']
-  const waitTimes = calculateWaitTime(booking)
-
-  const formatDate = (date: string) => {
-    return new Date(date).toLocaleDateString('en-US', {
-      month: 'short',
-      day: 'numeric',
-      year: 'numeric'
-    })
-  }
-
-  const formatTime = (time: string) => {
-    return new Date(`1970-01-01T${time}`).toLocaleTimeString('en-US', {
-      hour: 'numeric',
-      minute: '2-digit',
-      hour12: true
-    })
-  }
-
   return (
     <Card className="w-full hover:shadow-md transition-all duration-300 border-l-4 border-l-blue-500">
       <CardContent className="p-6">
@@ -206,9 +177,9 @@ export function PatientTelehealthCard({
                 <h3 className="text-lg font-semibold text-gray-900 truncate">
                   {booking.patient.full_name}
                 </h3>
-                <Badge className={`${statusStyle.color} px-2 py-1 text-xs font-medium shadow-sm`}>
+                <Badge className={`${statusConfig.color} px-2 py-1 text-xs font-medium shadow-sm`}>
                   <StatusIcon className="w-3 h-3 mr-1" />
-                  {statusStyle.label}
+                  {statusConfig.label}
                 </Badge>
               </div>
               
@@ -237,22 +208,9 @@ export function PatientTelehealthCard({
           </div>
 
           {/* Type Badge */}
-          <Badge 
-            className={`ml-4 px-3 py-1 ${booking.booking_type === 'online' 
-              ? 'bg-emerald-50 text-emerald-700 border-emerald-200' 
-              : 'bg-indigo-50 text-indigo-700 border-indigo-200'}`}
-          >
-            {booking.booking_type === 'online' ? (
-              <>
-                <VideoIcon className="w-3 h-3 mr-1" />
-                Telehealth
-              </>
-            ) : (
-              <>
-                <BuildingIcon className="w-3 h-3 mr-1" />
-                In-Person
-              </>
-            )}
+          <Badge className={`ml-4 px-3 py-1 ${typeConfig.color}`}>
+            <span className="mr-1">{typeConfig.icon}</span>
+            {typeConfig.label}
           </Badge>
         </div>
 
@@ -367,4 +325,6 @@ export function PatientTelehealthCard({
       </CardContent>
     </Card>
   )
-} 
+})
+
+export { PatientTelehealthCard } 

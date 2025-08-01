@@ -32,16 +32,28 @@ export default function AdminPanel() {
         return getBookingsByType('pre-booked')
       case 'online':
         return getBookingsByType('online')
-      case 'completed':
-        return getBookingsByStatus('completed')
       case 'pending':
         return getBookingsByStatus('pending')
       case 'confirmed':
         return getBookingsByStatus('confirmed')
-      case 'waiting-room':
-        return getBookingsByStatus('waiting-room')
-      case 'in-call':
-        return getBookingsByStatus('in-call')
+      case 'intake':
+        return getBookingsByStatus('intake')
+      case 'ready-for-provider':
+        return getBookingsByStatus('ready-for-provider')
+      case 'provider':
+        return getBookingsByStatus('provider')
+      case 'ready-for-discharge':
+        return getBookingsByStatus('ready-for-discharge')
+      case 'discharged':
+        return getBookingsByStatus('discharged')
+      case 'cancelled':
+        return getBookingsByStatus('cancelled')
+      case 'completed':
+        // Map old "completed" to new "discharged" status
+        return getBookingsByStatus('discharged')
+      case 'active':
+        // Show all active telehealth patients
+        return bookings.filter(b => ['intake', 'ready-for-provider', 'provider'].includes(b.status))
       default:
         return bookings
     }
@@ -130,13 +142,13 @@ export default function AdminPanel() {
             </Card>
             <Card>
               <CardHeader className="pb-2">
-                <CardTitle className="text-sm font-medium text-gray-600">Completed</CardTitle>
+                <CardTitle className="text-sm font-medium text-gray-600">Active</CardTitle>
               </CardHeader>
               <CardContent>
-                <div className="text-2xl font-bold text-gray-600">
-                  {stats.byStatus['completed'] || 0}
+                <div className="text-2xl font-bold text-green-600">
+                  {(stats.byStatus['intake'] || 0) + (stats.byStatus['ready-for-provider'] || 0) + (stats.byStatus['provider'] || 0)}
                 </div>
-                <p className="text-xs text-gray-500 mt-1">Finished appointments</p>
+                <p className="text-xs text-gray-500 mt-1">In telehealth workflow</p>
               </CardContent>
             </Card>
           </div>
@@ -144,58 +156,64 @@ export default function AdminPanel() {
 
         {/* Booking Tabs */}
         <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-          <TabsList className="grid w-full grid-cols-8">
+          <TabsList className="grid w-full grid-cols-6 lg:grid-cols-9">
             <TabsTrigger value="all">
               All
-              <Badge variant="secondary" className="ml-2">
+              <Badge variant="secondary" className="ml-1 text-xs">
                 {bookings.length}
-              </Badge>
-            </TabsTrigger>
-            <TabsTrigger value="pre-booked">
-              Pre-booked
-              <Badge variant="secondary" className="ml-2">
-                {stats?.byType['pre-booked'] || 0}
-              </Badge>
-            </TabsTrigger>
-            <TabsTrigger value="online">
-              Online
-              <Badge variant="secondary" className="ml-2">
-                {stats?.byType['online'] || 0}
               </Badge>
             </TabsTrigger>
             <TabsTrigger value="pending">
               Pending
-              <Badge variant="secondary" className="ml-2">
+              <Badge variant="secondary" className="ml-1 text-xs">
                 {stats?.byStatus['pending'] || 0}
               </Badge>
             </TabsTrigger>
             <TabsTrigger value="confirmed">
               Confirmed
-              <Badge variant="secondary" className="ml-2">
+              <Badge variant="secondary" className="ml-1 text-xs">
                 {stats?.byStatus['confirmed'] || 0}
               </Badge>
             </TabsTrigger>
-            <TabsTrigger value="waiting-room">
-              Waiting
-              <Badge variant="secondary" className="ml-2">
-                {stats?.byStatus['waiting-room'] || 0}
+            <TabsTrigger value="intake">
+              Intake
+              <Badge variant="secondary" className="ml-1 text-xs">
+                {stats?.byStatus['intake'] || 0}
               </Badge>
             </TabsTrigger>
-            <TabsTrigger value="in-call">
+            <TabsTrigger value="ready-for-provider">
+              Ready
+              <Badge variant="secondary" className="ml-1 text-xs">
+                {stats?.byStatus['ready-for-provider'] || 0}
+              </Badge>
+            </TabsTrigger>
+            <TabsTrigger value="provider">
               In Call
-              <Badge variant="secondary" className="ml-2">
-                {stats?.byStatus['in-call'] || 0}
+              <Badge variant="secondary" className="ml-1 text-xs">
+                {stats?.byStatus['provider'] || 0}
               </Badge>
             </TabsTrigger>
-            <TabsTrigger value="completed">
-              Completed
-              <Badge variant="secondary" className="ml-2">
-                {stats?.byStatus['completed'] || 0}
+            <TabsTrigger value="active">
+              Active
+              <Badge variant="secondary" className="ml-1 text-xs">
+                {(stats?.byStatus['intake'] || 0) + (stats?.byStatus['ready-for-provider'] || 0) + (stats?.byStatus['provider'] || 0)}
+              </Badge>
+            </TabsTrigger>
+            <TabsTrigger value="discharged">
+              Discharged
+              <Badge variant="secondary" className="ml-1 text-xs">
+                {stats?.byStatus['discharged'] || 0}
+              </Badge>
+            </TabsTrigger>
+            <TabsTrigger value="cancelled">
+              Cancelled
+              <Badge variant="secondary" className="ml-1 text-xs">
+                {stats?.byStatus['cancelled'] || 0}
               </Badge>
             </TabsTrigger>
           </TabsList>
 
-          {['all', 'pre-booked', 'online', 'pending', 'confirmed', 'waiting-room', 'in-call', 'completed'].map((tab) => (
+          {['all', 'pending', 'confirmed', 'intake', 'ready-for-provider', 'provider', 'active', 'discharged', 'cancelled'].map((tab) => (
             <TabsContent key={tab} value={tab} className="mt-6">
               {filteredBookings.length === 0 ? (
                 <Card>
