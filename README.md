@@ -1,7 +1,3 @@
-# Hospital Management System
-
-A comprehensive hospital management system built with Next.js, Supabase, and Tailwind CSS featuring telehealth queue management, patient booking, and video consultations.
-
 ## Features
 
 - 🔐 **Authentication**: Secure login and signup with Supabase Auth
