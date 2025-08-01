@@ -68,8 +68,6 @@ npm install
 4. Run the development server:
 
 ```bash
-yarn dev
-# or
 npm run dev
 ```
 
@@ -134,35 +132,11 @@ npm run db:studio
 npm run db:reset
 ```
 
-#### Alternative Setup Options
-
-If you prefer manual setup or encounter issues:
-
-**Option A: Using Supabase CLI**
-
-```bash
-supabase init
-supabase login
-supabase link --project-ref your-project-ref
-npm run db:migrate  # Uses Prisma instead of Supabase migrations
-npm run db:seed
-```
-
-**Option B: Manual SQL (Legacy)**
-If you still want to use the old SQL migration files:
-
-1. Go to SQL Editor in your Supabase dashboard
-2. Run `supabase/migrations/20240101000000_initial_schema.sql`
-3. Run `supabase/migrations/20241201000000_telehealth_queue_updates.sql`
-4. Then run `npm run db:seed` for test data
-
-### Verify Database Setup
-
 After running the setup commands:
 
 1. **Check Tables**: Go to Database → Tables and verify `patients` and `bookings` tables exist
 2. **View Sample Data**: Use `npm run db:studio` to open Prisma Studio and browse your data
-3. **Test the App**: Run `yarn dev` and try logging in with test credentials
+3. **Test the App**: Run `npm run dev` and try logging in with test credentials
 
 ### Test User Credentials
 
@@ -320,10 +294,7 @@ src/
 
 ### Development
 
-- `yarn dev` - Start development server
-- `yarn build` - Build for production
-- `yarn start` - Start production server
-- `yarn lint` - Run ESLint
+- `npm run dev` - Start development server
 
 ### Database Management
 
