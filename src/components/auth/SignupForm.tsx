@@ -63,7 +63,6 @@ export default function SignupForm() {
   return (
     <div className="min-h-screen bg-gradient-to-b from-blue-50 to-white dark:from-gray-900 dark:to-gray-800 flex items-center justify-center p-4">
       <div className="w-full max-w-md space-y-8">
-        {/* Logo and Title */}
         <div className="text-center space-y-6">
           <div className="flex justify-center">
             <div className="h-12 w-12 rounded-xl bg-blue-600 flex items-center justify-center">

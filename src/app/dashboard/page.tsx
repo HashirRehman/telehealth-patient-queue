@@ -12,7 +12,7 @@ import { PatientTelehealthCard } from '@/components/patient/PatientTelehealthCar
 export default function Dashboard() {
   const { user, signOut, loading } = useAuth()
   const router = useRouter()
-  const { myBookings, isLoading, getUpcomingBookings, getCompletedBookings } = useBookings()
+  const { myBookings, isLoading } = useBookings()
   const [showCreateBooking, setShowCreateBooking] = useState(false)
 
   useEffect(() => {

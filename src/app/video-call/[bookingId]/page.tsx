@@ -39,7 +39,6 @@ export default function VideoCall() {
     }
   }, [bookingId, user, loading])
 
-  // Update call duration every second when call is active
   useEffect(() => {
     let interval: NodeJS.Timeout | null = null
     
@@ -69,7 +68,6 @@ export default function VideoCall() {
 
       setBooking(foundBooking)
 
-      // Redirect if not in video call status
       if (foundBooking.status !== 'provider') {
         console.log(`Booking status is '${foundBooking.status}', expected 'provider'`)
         router.push('/dashboard')
@@ -87,7 +85,6 @@ export default function VideoCall() {
       console.log('🎥 Starting video call...')
       setConnectionStatus('connecting')
       
-      // Get user media (camera and microphone)
       console.log('📷 Requesting camera and microphone access...')
       const stream = await navigator.mediaDevices.getUserMedia({
         video: true,
@@ -102,7 +99,6 @@ export default function VideoCall() {
         console.log('📺 Local video stream attached')
       }
 
-      // Simulate connection establishment (replace with real WebRTC later)
       console.log('🔄 Establishing connection...')
       setTimeout(() => {
         console.log('✅ Connection established!')
@@ -115,7 +111,6 @@ export default function VideoCall() {
       console.error('❌ Error starting video call:', error)
       setConnectionStatus('disconnected')
       
-      // More specific error messages
       if (error instanceof Error) {
         if (error.name === 'NotAllowedError') {
           alert('Camera/microphone access denied. Please enable permissions and try again.')
@@ -133,13 +128,11 @@ export default function VideoCall() {
   }
 
   const endCall = async () => {
-    // Stop local stream
     if (localStreamRef.current) {
       localStreamRef.current.getTracks().forEach(track => track.stop())
       localStreamRef.current = null
     }
 
-    // Update booking status to ready-for-discharge
     if (booking) {
       try {
         await BookingService.updateBooking(booking.id, { status: 'ready-for-discharge' })
@@ -180,7 +173,6 @@ export default function VideoCall() {
     return `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`
   }
 
-  // Cleanup on unmount
   useEffect(() => {
     return () => {
       if (localStreamRef.current) {
@@ -204,7 +196,6 @@ export default function VideoCall() {
   return (
     <div className="min-h-screen bg-gray-900">
       <div className="max-w-7xl mx-auto px-4 py-4">
-        {/* Header */}
         <div className="flex justify-between items-center mb-6">
           <div>
             <h1 className="text-2xl font-bold text-white">Video Consultation</h1>
@@ -224,14 +215,12 @@ export default function VideoCall() {
         </div>
 
         {!isCallStarted ? (
-          /* Pre-call Interface */
           <div className="max-w-2xl mx-auto">
             <Card className="bg-gray-800 border-gray-700">
               <CardHeader>
                 <CardTitle className="text-white text-center">Ready to Start Video Call?</CardTitle>
               </CardHeader>
               <CardContent className="space-y-6">
-                {/* Local video preview */}
                 <div className="relative aspect-video bg-gray-700 rounded-lg overflow-hidden">
                   <video
                     ref={localVideoRef}
@@ -245,7 +234,6 @@ export default function VideoCall() {
                   </div>
                 </div>
 
-                {/* Pre-call checklist */}
                 <div className="space-y-3">
                   <h3 className="text-white font-medium">Before you start:</h3>
                   <div className="space-y-2 text-sm text-gray-300">
@@ -281,7 +269,6 @@ export default function VideoCall() {
                     Cancel
                   </Button>
                   
-                  {/* Debug Info - Remove in production */}
                   <div className="absolute -bottom-8 left-1/2 transform -translate-x-1/2 text-xs text-gray-400">
                     Status: {connectionStatus} | Started: {isCallStarted ? 'Yes' : 'No'}
                   </div>
@@ -290,11 +277,8 @@ export default function VideoCall() {
             </Card>
           </div>
         ) : (
-          /* Active Call Interface */
           <div className="space-y-4">
-            {/* Video Grid */}
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 h-[70vh]">
-              {/* Remote Video */}
               <div className="relative bg-gray-800 rounded-lg overflow-hidden">
                 <video
                   ref={remoteVideoRef}
@@ -318,7 +302,6 @@ export default function VideoCall() {
                 </div>
               </div>
 
-              {/* Local Video */}
               <div className="relative bg-gray-800 rounded-lg overflow-hidden">
                 <video
                   ref={localVideoRef}
@@ -345,7 +328,6 @@ export default function VideoCall() {
               </div>
             </div>
 
-            {/* Call Controls */}
             <div className="flex justify-center items-center gap-4 py-4">
               <Button
                 variant={isMuted ? "destructive" : "secondary"}

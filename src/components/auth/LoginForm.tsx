@@ -20,7 +20,6 @@ export default function LoginForm() {
   const router = useRouter();
   const searchParams = useSearchParams();
 
-  // Check for email verification success
   useEffect(() => {
     if (searchParams.get('verified') === 'true') {
       setVerificationMessage("Email verified successfully! You can now log in.");

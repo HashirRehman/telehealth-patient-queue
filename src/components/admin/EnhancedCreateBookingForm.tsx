@@ -26,8 +26,6 @@ export default function EnhancedCreateBookingForm({
   selectedPatient
 }: EnhancedCreateBookingFormProps) {
   const { patients, addBookingOptimistic, addPatientOptimistic } = useData()
-  
-  // Form state
   const [selectedPatientId, setSelectedPatientId] = useState(selectedPatient?.id || '')
   const [appointmentDate, setAppointmentDate] = useState('')
   const [appointmentTime, setAppointmentTime] = useState('')
@@ -35,8 +33,6 @@ export default function EnhancedCreateBookingForm({
   const [notes, setNotes] = useState('')
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [error, setError] = useState('')
-
-  // New patient form state (for creating patient on the fly)
   const [showNewPatientForm, setShowNewPatientForm] = useState(false)
   const [newPatientData, setNewPatientData] = useState({
     full_name: '',
@@ -48,7 +44,6 @@ export default function EnhancedCreateBookingForm({
     emergency_contact_phone: ''
   })
 
-  // Set minimum date and time
   useEffect(() => {
     const now = new Date()
     const today = now.toISOString().split('T')[0]
@@ -57,7 +52,6 @@ export default function EnhancedCreateBookingForm({
     
     setAppointmentDate(today)
     
-    // Set default time to next available slot (round up to next 15-minute interval + 1 hour)
     const nextHour = currentHour + 1
     const nextMinute = Math.ceil(currentMinute / 15) * 15
     const timeString = `${nextHour.toString().padStart(2, '0')}:${nextMinute.toString().padStart(2, '0')}`
@@ -69,7 +63,6 @@ export default function EnhancedCreateBookingForm({
       setIsSubmitting(true)
       setError('')
 
-      // Validate new patient data
       if (!newPatientData.full_name || !newPatientData.email) {
         setError('Name and email are required for new patients')
         return
@@ -94,7 +87,6 @@ export default function EnhancedCreateBookingForm({
     setError('')
 
     try {
-      // Validation
       if (!selectedPatientId) {
         setError('Please select a patient')
         return
@@ -105,7 +97,6 @@ export default function EnhancedCreateBookingForm({
         return
       }
 
-      // Check if appointment is in the future
       const appointmentDateTime = new Date(`${appointmentDate}T${appointmentTime}`)
       const now = new Date()
       
@@ -120,7 +111,6 @@ export default function EnhancedCreateBookingForm({
         return
       }
 
-      // Create booking
       const bookingData = {
         appointment_date: appointmentDate,
         appointment_time: appointmentTime,
@@ -131,7 +121,6 @@ export default function EnhancedCreateBookingForm({
 
       const newBooking = await BookingService.createBooking(selectedPatientId, bookingData)
       
-      // Create optimistic update
       const bookingWithPatient = {
         ...newBooking,
         patient: selectedPatient
@@ -181,7 +170,6 @@ export default function EnhancedCreateBookingForm({
           )}
 
           <form onSubmit={handleSubmit} className="space-y-6">
-            {/* Booking Type Selection */}
             <div className="space-y-2">
               <Label>Appointment Type</Label>
               <div className="flex gap-4">
@@ -237,7 +225,6 @@ export default function EnhancedCreateBookingForm({
               </div>
             </div>
 
-            {/* Patient Selection */}
             <div className="space-y-2">
               <Label htmlFor="patient">Patient</Label>
               {!showNewPatientForm ? (
@@ -270,7 +257,6 @@ export default function EnhancedCreateBookingForm({
                   )}
                 </div>
               ) : (
-                /* New Patient Form */
                 <Card className="p-4 bg-gray-50">
                   <div className="space-y-4">
                     <div className="flex items-center justify-between">

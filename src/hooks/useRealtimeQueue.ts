@@ -31,8 +31,7 @@ export function useRealtimeQueue() {
   })
   const [isLoading, setIsLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
-
-  // Fetch initial queue data
+    
   const fetchQueueData = useCallback(async () => {
     try {
       setIsLoading(true)
@@ -58,7 +57,6 @@ export function useRealtimeQueue() {
     }
   }, [])
 
-  // Periodic refresh for queue updates
   const setupPeriodicRefresh = useCallback(() => {
     return setInterval(() => {
       if (document.visibilityState === 'visible') {
@@ -68,28 +66,22 @@ export function useRealtimeQueue() {
   }, [fetchQueueData])
 
   useEffect(() => {
-    // Fetch initial data
     fetchQueueData()
 
-    // Set up periodic refresh
     const interval = setupPeriodicRefresh()
 
-    // Cleanup on unmount
     return () => {
       clearInterval(interval)
     }
   }, [fetchQueueData, setupPeriodicRefresh])
 
-  // Refresh queue data manually
   const refreshQueue = async () => {
     await fetchQueueData()
   }
 
-  // Queue management actions
   const moveToIntake = async (bookingId: string) => {
     try {
       await QueueService.moveToIntake(bookingId)
-      // Data will be updated via periodic refresh
     } catch (err) {
       console.error('Error moving to intake:', err)
       setError('Failed to move patient to intake')
@@ -99,7 +91,6 @@ export function useRealtimeQueue() {
   const moveToReadyForProvider = async (bookingId: string) => {
     try {
       await QueueService.moveToReadyForProvider(bookingId)
-      // Data will be updated via periodic refresh
     } catch (err) {
       console.error('Error moving to ready for provider:', err)
       setError('Failed to move patient to ready for provider')
@@ -109,7 +100,6 @@ export function useRealtimeQueue() {
   const startCall = async (bookingId: string) => {
     try {
       await QueueService.startCall(bookingId)
-      // Data will be updated via periodic refresh
     } catch (err) {
       console.error('Error starting call:', err)
       setError('Failed to start call')
@@ -119,7 +109,6 @@ export function useRealtimeQueue() {
   const completeCall = async (bookingId: string) => {
     try {
       await QueueService.completeCall(bookingId)
-      // Data will be updated via periodic refresh
     } catch (err) {
       console.error('Error completing call:', err)
       setError('Failed to complete call')
@@ -129,7 +118,6 @@ export function useRealtimeQueue() {
   const dischargePatient = async (bookingId: string) => {
     try {
       await QueueService.dischargePatient(bookingId)
-      // Data will be updated via periodic refresh
     } catch (err) {
       console.error('Error discharging patient:', err)
       setError('Failed to discharge patient')
@@ -139,7 +127,6 @@ export function useRealtimeQueue() {
   const removeFromQueue = async (bookingId: string) => {
     try {
       await QueueService.removeFromQueue(bookingId)
-      // Data will be updated via periodic refresh
     } catch (err) {
       console.error('Error removing from queue:', err)
       setError('Failed to remove patient from queue')
@@ -158,12 +145,10 @@ export function useRealtimeQueue() {
   }
 
   return {
-    // State
     ...queueState,
     isLoading,
     error,
     
-    // Actions
     refreshQueue,
     moveToIntake,
     moveToReadyForProvider,
@@ -173,7 +158,6 @@ export function useRealtimeQueue() {
     removeFromQueue,
     autoAdvanceQueue,
     
-    // Clear error
     clearError: () => setError(null)
   }
 } 

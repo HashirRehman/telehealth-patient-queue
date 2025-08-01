@@ -13,7 +13,6 @@ import {
   UserIcon, 
   PhoneIcon, 
   MailIcon,
-  MapPinIcon,
   FileTextIcon,
   VideoIcon,
   BuildingIcon,
@@ -150,12 +149,10 @@ export default function BookingCard({ booking }: BookingCardProps) {
       <CardHeader className="pb-4">
         <div className="flex justify-between items-start">
           <div className="flex items-start space-x-4">
-            {/* Patient Avatar */}
             <div className="w-12 h-12 bg-gradient-to-br from-blue-500 to-blue-600 rounded-full flex items-center justify-center shadow-lg">
               <UserIcon className="w-6 h-6 text-white" />
             </div>
             
-            {/* Patient Info */}
             <div className="flex-1">
               <CardTitle className="text-xl font-bold text-gray-800 mb-1">
                 {booking.patient.full_name}
@@ -184,7 +181,6 @@ export default function BookingCard({ booking }: BookingCardProps) {
             </div>
           </div>
           
-          {/* Status and Type Badges */}
           <div className="flex flex-col gap-2">
             <Badge className={`${statusStyle.color} px-3 py-1 font-medium shadow-sm`}>
               <StatusIcon className="w-3 h-3 mr-1" />
@@ -199,7 +195,6 @@ export default function BookingCard({ booking }: BookingCardProps) {
       </CardHeader>
 
       <CardContent className="space-y-6">
-        {/* Appointment Details */}
         <div className="bg-white/60 rounded-lg p-4 space-y-3 shadow-sm">
           <h4 className="font-semibold text-gray-800 flex items-center">
             <CalendarIcon className="w-4 h-4 mr-2 text-blue-500" />
@@ -224,7 +219,6 @@ export default function BookingCard({ booking }: BookingCardProps) {
             </div>
           </div>
 
-          {/* Additional Telehealth Info */}
           {booking.booking_type === 'online' && (
             <div className="mt-3 pt-3 border-t border-gray-200">
               {booking.provider_name && (
@@ -262,7 +256,6 @@ export default function BookingCard({ booking }: BookingCardProps) {
           )}
         </div>
 
-        {/* Status Update Controls */}
         <div className="bg-white/60 rounded-lg p-4 space-y-3 shadow-sm">
           <h4 className="font-semibold text-gray-800">Quick Actions</h4>
           
@@ -333,7 +326,6 @@ export default function BookingCard({ booking }: BookingCardProps) {
           </div>
         </div>
 
-        {/* Timestamps */}
         <div className="text-xs text-gray-500 border-t pt-3">
           <div className="flex justify-between">
             <span>Created: {new Date(booking.created_at).toLocaleString()}</span>

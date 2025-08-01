@@ -31,7 +31,6 @@ export default function WaitingRoom() {
     }
   }, [bookingId, user, loading])
 
-  // Update current time every second
   useEffect(() => {
     const timer = setInterval(() => {
       setCurrentTime(new Date())
@@ -40,7 +39,6 @@ export default function WaitingRoom() {
     return () => clearInterval(timer)
   }, [])
 
-  // Poll booking status every 5 seconds
   useEffect(() => {
     if (!booking) return
 
@@ -51,7 +49,6 @@ export default function WaitingRoom() {
         if (updatedBooking) {
           setBooking(updatedBooking)
           
-          // Redirect to video call if status changed to provider (in-call)
           if (updatedBooking.status === 'provider') {
             router.push(`/video-call/${bookingId}`)
           }
@@ -64,11 +61,9 @@ export default function WaitingRoom() {
     return () => clearInterval(interval)
   }, [booking, bookingId, router])
 
-  // Simulate connection check
   useEffect(() => {
     const checkConnection = async () => {
       setConnectionStatus('checking')
-      // Simulate connection test
       await new Promise(resolve => setTimeout(resolve, 2000))
       setConnectionStatus('connected')
     }
@@ -89,7 +84,6 @@ export default function WaitingRoom() {
 
       setBooking(foundBooking)
 
-      // Redirect if not in waiting room status
       if (foundBooking.status === 'provider') {
         router.push(`/video-call/${bookingId}`)
       } else if (!['intake', 'ready-for-provider', 'confirmed'].includes(foundBooking.status)) {
@@ -142,7 +136,6 @@ export default function WaitingRoom() {
           <p className="text-gray-600">Please wait while your healthcare provider prepares for your appointment</p>
         </div>
 
-        {/* Connection Status */}
         <Card className="mb-6">
           <CardContent className="p-6">
             <div className="flex items-center justify-between">
@@ -167,7 +160,6 @@ export default function WaitingRoom() {
           </CardContent>
         </Card>
 
-        {/* Appointment Details */}
         <Card className="mb-6">
           <CardHeader>
             <CardTitle className="flex items-center justify-between">
@@ -219,7 +211,6 @@ export default function WaitingRoom() {
           </CardContent>
         </Card>
 
-        {/* Status Messages */}
         {!isAppointmentTime && (
           <Card className="mb-6 border-yellow-200 bg-yellow-50">
             <CardContent className="p-6">
@@ -262,7 +253,6 @@ export default function WaitingRoom() {
           </Card>
         )}
 
-        {/* Pre-call Instructions */}
         <Card className="mb-6">
           <CardHeader>
             <CardTitle>Before Your Call</CardTitle>
@@ -290,7 +280,6 @@ export default function WaitingRoom() {
           </CardContent>
         </Card>
 
-        {/* Actions */}
         <div className="flex justify-center gap-4">
           <Button variant="outline" onClick={leaveWaitingRoom}>
             Leave Waiting Room

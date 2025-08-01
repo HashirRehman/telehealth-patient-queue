@@ -3,7 +3,7 @@
 import { useEffect, useState } from 'react'
 import { useAuth } from '@/contexts/AuthContext'
 import { useRouter } from 'next/navigation'
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { Input } from '@/components/ui/input'
@@ -14,8 +14,8 @@ import { BookingService } from '@/lib/bookings'
 import type { BookingWithPatient, TelehealthStatus, QueueTab, QueueFilters } from '@/lib/database.types'
 import { PatientTelehealthCard } from '@/components/patient/PatientTelehealthCard'
 import { QueueStatusFlow } from '@/components/telehealth/QueueStatusFlow'
-import '@/lib/debug-booking-status' // Load debug utilities
-import '@/lib/database-check' // Load database check utilities
+import '@/lib/debug-booking-status'
+import '@/lib/database-check'
 import { ChevronDownIcon, ChevronUpIcon, MoreVerticalIcon } from 'lucide-react'
 import {
   DropdownMenu,
@@ -50,43 +50,35 @@ export default function TelehealthQueue() {
     }
   }, [user, loading, router])
 
-  // Filter bookings based on tab and filters
   const getFilteredBookings = () => {
     let filtered = bookings
 
-    // Tab filtering
     switch (activeTab) {
       case 'pre-booked':
-        // Pre-booked: appointments that aren't online, in waiting room, video call or completed
         filtered = filtered.filter(b => 
           !['intake', 'ready-for-provider', 'provider', 'ready-for-discharge', 'discharged'].includes(b.status)
         )
         break
       case 'in-office':
-        // In Office: patients currently in the telehealth workflow
         filtered = filtered.filter(b => 
           ['intake', 'ready-for-provider', 'provider'].includes(b.status)
         )
         break
       case 'completed':
-        // Completed: patients who have been discharged
         filtered = filtered.filter(b => 
           ['ready-for-discharge', 'discharged'].includes(b.status)
         )
         break
     }
 
-    // Status filtering
     if (filters.statuses.length > 0) {
       filtered = filtered.filter(b => filters.statuses.includes(b.status as TelehealthStatus))
     }
 
-    // Provider filtering
     if (filters.providerName) {
       filtered = filtered.filter(b => b.provider_name === filters.providerName)
     }
 
-    // Patient name search (fuzzy)
     if (filters.patientNameSearch) {
       const searchTerm = filters.patientNameSearch.toLowerCase()
       filtered = filtered.filter(b => 
@@ -99,7 +91,6 @@ export default function TelehealthQueue() {
 
   const filteredBookings = getFilteredBookings()
 
-  // Get status counts for current tab
   const getStatusCounts = () => {
     const tabBookings = getFilteredBookings()
     const counts: Record<TelehealthStatus, number> = {
@@ -125,7 +116,6 @@ export default function TelehealthQueue() {
 
   const statusCounts = getStatusCounts()
 
-  // Group bookings for in-office tab
   const getGroupedBookings = () => {
     if (activeTab !== 'in-office') return null
 
@@ -158,12 +148,10 @@ export default function TelehealthQueue() {
     setIsUpdating(bookingId)
     try {
       await BookingService.updateBooking(bookingId, { status: newStatus })
-      console.log(`Successfully updated booking ${bookingId} to status: ${newStatus}`)
-      // Data will be refreshed automatically via optimistic updates
+      console.log(`Successfully updated booking ${bookingId} to status: ${newStatus}`)      
     } catch (error: unknown) {
       console.error('Error updating booking status:', error)
       
-      // Extract meaningful error message
       let errorMessage = 'Unknown error'
       if (error && typeof error === 'object') {
         if ('message' in error && typeof error.message === 'string') {
@@ -184,47 +172,10 @@ export default function TelehealthQueue() {
         newStatus
       })
       
-      // Show user-friendly error message
       alert(`Failed to update patient status to ${newStatus}.\n\nError: ${errorMessage}\n\nPlease check the browser console for more details.`)
     } finally {
       setIsUpdating(null)
     }
-  }
-
-  const getStatusColor = (status: string) => {
-    switch (status) {
-      case 'pending': return 'bg-yellow-100 text-yellow-800 border-yellow-200'
-      case 'confirmed': return 'bg-blue-100 text-blue-800 border-blue-200'
-      case 'intake': return 'bg-purple-100 text-purple-800 border-purple-200'
-      case 'ready-for-provider': return 'bg-green-100 text-green-800 border-green-200'
-      case 'provider': return 'bg-orange-100 text-orange-800 border-orange-200'
-      case 'ready-for-discharge': return 'bg-indigo-100 text-indigo-800 border-indigo-200'
-      case 'discharged': return 'bg-gray-100 text-gray-800 border-gray-200'
-      default: return 'bg-gray-100 text-gray-800 border-gray-200'
-    }
-  }
-
-  const formatAppointmentType = (booking: BookingWithPatient) => {
-    if (booking.is_adhoc) {
-      return 'Adhoc'
-    }
-    const time = new Date(`1970-01-01T${booking.appointment_time}`).toLocaleTimeString('en-US', {
-      hour: 'numeric',
-      minute: '2-digit',
-      hour12: true
-    })
-    return `Booked ${time}`
-  }
-
-  const calculateWaitTime = (booking: BookingWithPatient) => {
-    const now = new Date()
-    const appointmentTime = new Date(`${booking.appointment_date}T${booking.appointment_time}`)
-    const createdTime = new Date(booking.created_at)
-    
-    const currentWait = Math.max(0, Math.floor((now.getTime() - appointmentTime.getTime()) / (1000 * 60)))
-    const totalWait = Math.floor((now.getTime() - createdTime.getTime()) / (1000 * 60))
-    
-    return { currentWait, totalWait }
   }
 
   const toggleGroup = (groupKey: string) => {
@@ -250,16 +201,13 @@ export default function TelehealthQueue() {
           showActions={false}
         />
         
-        {/* Provider Actions - positioned in the card */}
         <div className="absolute top-4 right-4 flex items-center gap-2">
-          {/* Priority Badge for Ready Patients */}
           {booking.status === 'ready-for-provider' && (
             <Badge className="bg-green-100 text-green-800 border-green-200 animate-pulse">
               Ready Now
             </Badge>
           )}
           
-          {/* Quick Action Buttons */}
           {canMoveToProvider && (
             <Button 
               size="sm"
@@ -292,7 +240,6 @@ export default function TelehealthQueue() {
             </Button>
           )}
 
-          {/* Context Menu */}
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <Button variant="ghost" size="sm">
@@ -364,7 +311,6 @@ export default function TelehealthQueue() {
   return (
     <div className="min-h-screen bg-gray-50">
       <div className="max-w-7xl mx-auto px-4 py-8">
-        {/* Header */}
         <div className="flex justify-between items-center mb-8">
           <div>
             <h1 className="text-3xl font-bold text-gray-900">Telehealth Queue</h1>
@@ -377,14 +323,11 @@ export default function TelehealthQueue() {
           </div>
         </div>
 
-        {/* Status Flow Guide */}
         <QueueStatusFlow />
 
-        {/* Filters */}
         <Card className="mb-6">
           <CardContent className="p-4">
             <div className="flex flex-wrap gap-4 items-center">
-              {/* Status Filter */}
               <div className="flex-1 min-w-48">
                 <DropdownMenu>
                   <DropdownMenuTrigger asChild>
@@ -423,7 +366,6 @@ export default function TelehealthQueue() {
                 </DropdownMenu>
               </div>
 
-                             {/* Provider Filter */}
                <div className="flex-1 min-w-48">
                  <Select 
                    value={filters.providerName || 'all-providers'} 
@@ -443,7 +385,6 @@ export default function TelehealthQueue() {
                  </Select>
                </div>
 
-              {/* Patient Name Search */}
               <div className="flex-1 min-w-48">
                 <Input
                   placeholder="Search patient name..."
@@ -455,7 +396,6 @@ export default function TelehealthQueue() {
           </CardContent>
         </Card>
 
-        {/* Tabs */}
         <Tabs value={activeTab} onValueChange={(value) => setActiveTab(value as QueueTab)}>
           <TabsList className="grid w-full grid-cols-3">
             <TabsTrigger value="pre-booked">
@@ -542,14 +482,12 @@ export default function TelehealthQueue() {
           </Tabs>
         </div>
 
-        {/* Patient Details Modal */}
         <PatientDetailsModal
           isOpen={!!selectedPatient}
           onClose={() => setSelectedPatient(null)}
           booking={selectedPatient}
           onUpdateNotes={async (bookingId: string, notes: string) => {
             await BookingService.updateBooking(bookingId, { notes })
-            // Refresh bookings to show updated notes
             window.location.reload()
           }}
         />

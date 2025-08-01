@@ -32,13 +32,12 @@ export function NotificationSystem({
   useEffect(() => {
     setVisibleNotifications(notifications)
 
-    // Auto-hide notifications that have autoHide set to true
     const timers = notifications
       .filter(n => n.autoHide)
       .map(notification => 
         setTimeout(() => {
           onDismiss(notification.id)
-        }, 5000) // Auto-hide after 5 seconds
+        }, 5000)
       )
 
     return () => {
@@ -159,7 +158,6 @@ export function NotificationSystem({
   )
 }
 
-// Notification helper functions
 export const createNotification = (
   type: Notification['type'],
   title: string,
@@ -175,7 +173,6 @@ export const createNotification = (
   ...options
 })
 
-// Pre-defined notification creators for common queue events
 export const QueueNotifications = {
   patientJoinedWaitingRoom: (patientName: string, bookingId: string) =>
     createNotification(

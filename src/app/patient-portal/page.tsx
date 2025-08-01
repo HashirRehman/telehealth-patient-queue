@@ -30,12 +30,10 @@ export default function PatientPortal() {
   if (!user) {
     return null
   }
-
-  // Filter appointments by type
+  
   const telehealthAppointments = myBookings.filter(b => b.booking_type === 'online')
   const inPersonAppointments = myBookings.filter(b => b.booking_type === 'pre-booked')
 
-  // Get active telehealth appointment
   const activeTelehealthAppointment = telehealthAppointments.find(b => 
     ['confirmed', 'intake', 'ready-for-provider', 'provider'].includes(b.status)
   )
@@ -43,7 +41,6 @@ export default function PatientPortal() {
   return (
     <div className="min-h-screen bg-gray-50">
       <div className="max-w-4xl mx-auto px-4 py-8">
-        {/* Header */}
         <div className="flex justify-between items-center mb-8">
           <div>
             <h1 className="text-3xl font-bold text-gray-900">Patient Portal</h1>
@@ -56,7 +53,6 @@ export default function PatientPortal() {
           </div>
         </div>
 
-        {/* Active Telehealth Session */}
         {activeTelehealthAppointment && (
           <Card className="mb-8 border-blue-200 bg-blue-50">
             <CardHeader>

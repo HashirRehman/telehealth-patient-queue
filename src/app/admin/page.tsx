@@ -49,7 +49,6 @@ export default function AdminPanel() {
 
   const handleCreateBookingSuccess = () => {
     setShowCreateBooking(false)
-    // Data will be automatically updated via optimistic updates
   }
 
   if (loading || isLoading) {
@@ -69,7 +68,6 @@ export default function AdminPanel() {
   return (
     <div className="min-h-screen bg-gray-50">
       <div className="max-w-7xl mx-auto px-4 py-8">
-        {/* Header */}
         <div className="flex justify-between items-center mb-8">
           <div>
             <h1 className="text-3xl font-bold text-gray-900">Admin Panel</h1>
@@ -88,7 +86,6 @@ export default function AdminPanel() {
           </div>
         </div>
 
-        {/* Stats Cards */}
         {stats && (
           <div className="grid grid-cols-1 md:grid-cols-5 gap-6 mb-8">
             <Card>
@@ -229,7 +226,6 @@ export default function AdminPanel() {
         </Tabs>
       </div>
 
-      {/* Create Booking Modal */}
       {showCreateBooking && (
         <CreateBookingForm
           onSuccess={handleCreateBookingSuccess}
