@@ -29,7 +29,8 @@ import { PatientDetailsModal } from '@/components/patient/PatientDetailsModal'
 export default function TelehealthQueue() {
   const { user, loading } = useAuth()
   const router = useRouter()
-  const { bookings, isLoading } = useBookings()
+  const { myBookings: originalBookings, isLoading } = useBookings()
+  const [bookings, setBookings] = useState(originalBookings)
   const [activeTab, setActiveTab] = useState<QueueTab>('pre-booked')
   const [filters, setFilters] = useState<QueueFilters>({
     statuses: [],
@@ -48,6 +49,10 @@ export default function TelehealthQueue() {
       router.push('/login')
     }
   }, [user, loading, router])
+
+  useEffect(() => {
+    setBookings(originalBookings)
+  }, [originalBookings])
 
   const getFilteredBookings = () => {
     let filtered = bookings
@@ -143,13 +148,22 @@ export default function TelehealthQueue() {
 
   const groupedBookings = getGroupedBookings()
 
-    const updateBookingStatus = async (bookingId: string, newStatus: TelehealthStatus) => {
+      const updateBookingStatus = async (bookingId: string, newStatus: TelehealthStatus) => {
     setIsUpdating(bookingId)
+    
+    setBookings((prevBookings: BookingWithPatient[]) => 
+      prevBookings.map((booking: BookingWithPatient) => 
+        booking.id === bookingId 
+          ? { ...booking, status: newStatus }
+          : booking
+      )
+    )
     
     try {
       await BookingService.updateBooking(bookingId, { status: newStatus })
-
+      
     } catch (error: unknown) {
+      setBookings(originalBookings)
       console.error('Error updating booking status:', error)
       
       let errorMessage = 'Unknown error'

@@ -23,7 +23,6 @@ import {
   VideoIcon,
   BuildingIcon,
   ClipboardIcon,
-  ActivityIcon,
   AlertCircleIcon,
   CheckCircleIcon,
   XCircleIcon,
@@ -388,44 +387,6 @@ export function PatientDetailsModal({
                   )}
                 </div>
               )}
-            </CardContent>
-          </Card>
-
-          {/* Quick Actions */}
-          <Card className="lg:col-span-2">
-            <CardHeader>
-              <CardTitle className="flex items-center text-lg">
-                <ActivityIcon className="w-5 h-5 mr-2 text-orange-500" />
-                Quick Actions
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="flex flex-wrap gap-3">
-                {booking.booking_type === 'online' && booking.status === 'provider' && (
-                  <Button 
-                    onClick={() => window.open(`/video-call/${booking.id}`, '_blank')}
-                    className="bg-green-600 hover:bg-green-700"
-                  >
-                    <VideoIcon className="w-4 h-4 mr-2" />
-                    Join Video Call
-                  </Button>
-                )}
-                
-                <Button variant="outline">
-                  <FileTextIcon className="w-4 h-4 mr-2" />
-                  View Medical Records
-                </Button>
-                
-                <Button variant="outline">
-                  <CalendarIcon className="w-4 h-4 mr-2" />
-                  Schedule Follow-up
-                </Button>
-                
-                <Button variant="outline">
-                  <MailIcon className="w-4 h-4 mr-2" />
-                  Send Message
-                </Button>
-              </div>
             </CardContent>
           </Card>
         </div>
