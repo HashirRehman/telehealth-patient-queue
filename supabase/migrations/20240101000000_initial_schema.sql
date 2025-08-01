@@ -2,7 +2,7 @@
 CREATE TYPE booking_type AS ENUM ('pre-booked', 'online');
 CREATE TYPE booking_status AS ENUM ('pending', 'confirmed', 'waiting-room', 'in-call', 'completed', 'cancelled');
 
--- Create patients table
+
 CREATE TABLE IF NOT EXISTS patients (
   id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
   user_id UUID REFERENCES auth.users(id) ON DELETE SET NULL,
@@ -17,7 +17,7 @@ CREATE TABLE IF NOT EXISTS patients (
   emergency_contact_phone TEXT
 );
 
--- Create bookings table
+
 CREATE TABLE IF NOT EXISTS bookings (
   id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
   patient_id UUID REFERENCES patients(id) ON DELETE CASCADE NOT NULL,
@@ -31,45 +31,35 @@ CREATE TABLE IF NOT EXISTS bookings (
   created_by UUID REFERENCES auth.users(id) ON DELETE CASCADE NOT NULL
 );
 
--- Enable Row Level Security
+
 ALTER TABLE patients ENABLE ROW LEVEL SECURITY;
 ALTER TABLE bookings ENABLE ROW LEVEL SECURITY;
 
--- Patients RLS Policies
--- Users can view their own patient records
 CREATE POLICY "Users can view their own patient records" ON patients
   FOR SELECT USING (auth.uid() = user_id OR auth.role() = 'authenticated');
 
--- Users can insert patient records
+
 CREATE POLICY "Users can insert patient records" ON patients
   FOR INSERT WITH CHECK (auth.role() = 'authenticated');
 
--- Users can update their own patient records
 CREATE POLICY "Users can update their own patient records" ON patients
   FOR UPDATE USING (auth.uid() = user_id OR auth.role() = 'authenticated');
 
--- Authenticated users can delete patient records
 CREATE POLICY "Authenticated users can delete patient records" ON patients
   FOR DELETE USING (auth.role() = 'authenticated');
 
--- Bookings RLS Policies
--- Authenticated users can view all bookings (for admin functionality)
 CREATE POLICY "Authenticated users can view all bookings" ON bookings
   FOR SELECT USING (auth.role() = 'authenticated');
 
--- Users can insert bookings for any patient record
 CREATE POLICY "Users can insert bookings" ON bookings
   FOR INSERT WITH CHECK (auth.role() = 'authenticated' AND auth.uid() = created_by);
 
--- Authenticated users can update bookings
 CREATE POLICY "Authenticated users can update bookings" ON bookings
   FOR UPDATE USING (auth.role() = 'authenticated');
 
--- Authenticated users can delete bookings
 CREATE POLICY "Authenticated users can delete bookings" ON bookings
   FOR DELETE USING (auth.role() = 'authenticated');
 
--- Create function to handle new user signup - automatically create patient record
 CREATE OR REPLACE FUNCTION public.handle_new_user()
 RETURNS trigger AS $$
 BEGIN

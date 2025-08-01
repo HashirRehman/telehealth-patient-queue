@@ -69,7 +69,7 @@ export default function VideoCall() {
       setBooking(foundBooking)
 
       if (foundBooking.status !== 'provider') {
-        console.log(`Booking status is '${foundBooking.status}', expected 'provider'`)
+
         router.push('/dashboard')
       }
     } catch (error) {
@@ -82,26 +82,19 @@ export default function VideoCall() {
 
   const startVideoCall = async () => {
     try {
-      console.log('🎥 Starting video call...')
       setConnectionStatus('connecting')
-      
-      console.log('📷 Requesting camera and microphone access...')
       const stream = await navigator.mediaDevices.getUserMedia({
         video: true,
         audio: true
       })
 
-      console.log('✅ Media access granted:', stream)
       localStreamRef.current = stream
       
       if (localVideoRef.current) {
         localVideoRef.current.srcObject = stream
-        console.log('📺 Local video stream attached')
       }
 
-      console.log('🔄 Establishing connection...')
       setTimeout(() => {
-        console.log('✅ Connection established!')
         setConnectionStatus('connected')
         setIsCallStarted(true)
         callStartTimeRef.current = new Date()

@@ -14,8 +14,7 @@ import { BookingService } from '@/lib/bookings'
 import type { BookingWithPatient, TelehealthStatus, QueueTab, QueueFilters } from '@/lib/database.types'
 import { PatientTelehealthCard } from '@/components/patient/PatientTelehealthCard'
 import { QueueStatusFlow } from '@/components/telehealth/QueueStatusFlow'
-import '@/lib/debug-booking-status'
-import '@/lib/database-check'
+
 import { ChevronDownIcon, ChevronUpIcon, MoreVerticalIcon } from 'lucide-react'
 import {
   DropdownMenu,
@@ -144,11 +143,12 @@ export default function TelehealthQueue() {
 
   const groupedBookings = getGroupedBookings()
 
-  const updateBookingStatus = async (bookingId: string, newStatus: TelehealthStatus) => {
+    const updateBookingStatus = async (bookingId: string, newStatus: TelehealthStatus) => {
     setIsUpdating(bookingId)
+    
     try {
       await BookingService.updateBooking(bookingId, { status: newStatus })
-      console.log(`Successfully updated booking ${bookingId} to status: ${newStatus}`)      
+
     } catch (error: unknown) {
       console.error('Error updating booking status:', error)
       
