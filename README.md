@@ -10,6 +10,7 @@
 
 - **Frontend**: Next.js 15, React 19, TypeScript
 - **Backend**: Supabase (Authentication, Database)
+- **Database ORM**: Prisma
 - **Styling**: Tailwind CSS v4, shadcn/ui
 - **Deployment**: Vercel (recommended)
 
@@ -17,18 +18,21 @@
 
 ### Prerequisites
 
-- Node.js 18+ 
+- Node.js 18+
 - npm or yarn
 - Supabase account
 
 ### Installation
 
 1. Clone the repository:
+
 ```bash
-https://github.com/HashirRehman/telehealth-patient-queue.git
+git clone https://github.com/HashirRehman/telehealth-patient-queue.git
+cd telehealth-patient-queue
 ```
 
 2. Install dependencies:
+
 ```bash
 yarn install
 # or
@@ -36,15 +40,24 @@ npm install
 ```
 
 3. Set up environment variables:
-   - Create a `.env.local` file in the root directory
-   - Add your Supabase credentials:
-```env
-NEXT_PUBLIC_SUPABASE_URL=your_supabase_project_url
-NEXT_PUBLIC_SUPABASE_ANON_KEY=your_supabase_anon_key
-NEXT_PUBLIC_BASE_URL=http://localhost:3000
-```
+   - Copy `.env.example` to `.env.local`:
+
+   ```bash
+   cp .env.example .env.local
+   ```
+
+   - Update your Supabase credentials in `.env.local`:
+
+   ```env
+   NEXT_PUBLIC_SUPABASE_URL=your_supabase_project_url
+   NEXT_PUBLIC_SUPABASE_ANON_KEY=your_supabase_anon_key
+   NEXT_PUBLIC_BASE_URL=http://localhost:3000
+   SUPABASE_SERVICE_ROLE_KEY=your_service_role_key
+   DATABASE_URL="postgresql://postgres:your-password@db.your-project-ref.supabase.co:5432/postgres"
+   ```
 
 4. Run the development server:
+
 ```bash
 yarn dev
 # or
@@ -56,107 +69,164 @@ npm run dev
 ### Supabase Setup
 
 1. Create a new project at [supabase.com](https://supabase.com)
-2. Go to Settings > API to find your project URL and anon key
-3. Add these to your `.env.local` file
-4. Enable email authentication in Authentication > Settings
-5. Configure email templates if needed
+2. Go to Settings > API to find your:
+   - **Project URL** and **anon key** (for frontend)
+   - **service_role key** (for seeding - keep this secret!)
+3. Go to Settings > Database to find your **DATABASE_URL** (Connection string > URI)
+4. Add all these credentials to your `.env.local` file
+5. Enable email authentication in Authentication > Settings
+6. Configure email templates if needed
 
-### Database Migration Setup
+### Database Setup with Prisma
 
-Once you have your Supabase project ready, you need to set up the database schema. You have **three options**:
+We use **Prisma ORM** for database management, which provides type-safe database access and easy migrations.
 
-#### Option A: Using Supabase CLI (Recommended)
+#### Quick Setup (Recommended)
 
-1. **Install Supabase CLI**:
+1. **Install dependencies**:
+
    ```bash
-   npm install -g supabase
+   yarn install
+   # or
+   npm install
    ```
 
-2. **Login to Supabase**:
+2. **Set up your database**:
+
    ```bash
-   supabase login
+   # Generate Prisma client
+   npm run db:generate
+
+   # Push schema to your Supabase database
+   npm run db:migrate
+
+   # Seed the database with test data
+   npm run db:seed
    ```
 
-3. **Link your project** (replace `your-project-ref` with your actual project reference):
-   ```bash
-   supabase link --project-ref your-project-ref
-   ```
-   
-   💡 **Find your project reference**: Go to your Supabase project dashboard, it's in the URL: `supabase.com/dashboard/project/[PROJECT-REF]`
+3. **That's it!** Your database is ready with sample data.
 
-4. **Push migrations to your cloud database**:
-   ```bash
-   supabase db push
-   ```
+#### Available Database Commands
 
-5. **Verify migrations were applied**:
-   ```bash
-   supabase db diff --linked
-   ```
+```bash
+# Generate Prisma client (run after schema changes)
+npm run db:generate
 
-#### Option B: Manual SQL Execution (Copy & Paste)
+# Push schema changes to database (like migrations)
+npm run db:migrate
 
-1. Go to **SQL Editor** in your Supabase dashboard
-2. Copy and paste the contents of each migration file in order:
+# Seed database with sample data
+npm run db:seed
 
-   **Step 1**: Copy and run `supabase/migrations/20240101000000_initial_schema.sql`
-   
-   **Step 2**: Copy and run `supabase/migrations/20241201000000_telehealth_queue_updates.sql`
+# Open Prisma Studio (database GUI)
+npm run db:studio
 
-3. Click "Run" for each SQL script
+# Reset database and reseed (⚠️ deletes all data)
+npm run db:reset
+```
 
-#### Option C: Using Database URL (Advanced)
+#### Alternative Setup Options
 
-1. Get your **database URL** from: Settings → Database → Connection string → URI
-2. Run migrations using psql:
-   ```bash
-   # Install PostgreSQL client if needed
-   # macOS: brew install postgresql
-   # Ubuntu: sudo apt install postgresql-client
-   
-   # Run migrations in order
-   psql "your-database-url" -f supabase/migrations/20240101000000_initial_schema.sql
-   psql "your-database-url" -f supabase/migrations/20241201000000_telehealth_queue_updates.sql
-   ```
+If you prefer manual setup or encounter issues:
+
+**Option A: Using Supabase CLI**
+
+```bash
+supabase init
+supabase login
+supabase link --project-ref your-project-ref
+npm run db:migrate  # Uses Prisma instead of Supabase migrations
+npm run db:seed
+```
+
+**Option B: Manual SQL (Legacy)**
+If you still want to use the old SQL migration files:
+
+1. Go to SQL Editor in your Supabase dashboard
+2. Run `supabase/migrations/20240101000000_initial_schema.sql`
+3. Run `supabase/migrations/20241201000000_telehealth_queue_updates.sql`
+4. Then run `npm run db:seed` for test data
 
 ### Verify Database Setup
 
-After running migrations:
+After running the setup commands:
 
 1. **Check Tables**: Go to Database → Tables and verify `patients` and `bookings` tables exist
-2. **Check Enums**: The `booking_status` enum should include: `pending`, `confirmed`, `intake`, `ready-for-provider`, `provider`, `ready-for-discharge`, `discharged`, `cancelled`
-3. **Test the App**: Run `yarn dev` and try creating a booking to ensure everything works
+2. **View Sample Data**: Use `npm run db:studio` to open Prisma Studio and browse your data
+3. **Test the App**: Run `yarn dev` and try logging in with test credentials
 
-### Migration Troubleshooting
+### Test User Credentials
 
-**If migrations fail:**
+After seeding, you can use these credentials to test the application:
+
+| Role         | Email                      | Password      | Description           |
+| ------------ | -------------------------- | ------------- | --------------------- |
+| **Admin**    | `admin@telehealth.com`     | `admin123`    | Administrator account |
+| **Provider** | `provider@telehealth.com`  | `provider123` | Healthcare provider   |
+| **Patient**  | `john.doe@email.com`       | `patient123`  | Test patient 1        |
+| **Patient**  | `jane.smith@email.com`     | `patient123`  | Test patient 2        |
+| **Patient**  | `robert.johnson@email.com` | `patient123`  | Test patient 3        |
+
+**Note**: These users are automatically created in Supabase Auth during seeding, so you can log in immediately with these credentials!
+
+### Troubleshooting
+
+**If database setup fails:**
+
 ```bash
-# Check what went wrong
-supabase db diff --linked
+# First, check your environment setup
+npm run db:check-env
 
-# Reset and try again (⚠️ This deletes all data!)
-supabase db reset --linked
-supabase db push
+# Check your DATABASE_URL in .env.local
+echo $DATABASE_URL
+
+# Reset everything and start fresh (⚠️ This deletes all data!)
+npm run db:reset
+
+# Or step by step:
+npm run db:generate
+npm run db:migrate
+npm run db:seed
 ```
 
 **Common issues:**
-- Make sure you're linked to the correct project
-- Verify you have proper permissions on your Supabase project
-- Run migrations in the correct order (initial schema first, then updates)
 
-### What Do These Migrations Create?
+1. **"User not allowed" error during seeding:**
+   - ❌ Missing `SUPABASE_SERVICE_ROLE_KEY` in `.env.local`
+   - ✅ Get it from: Supabase Dashboard → Settings → API → service_role key
+   - ✅ Add to `.env.local`: `SUPABASE_SERVICE_ROLE_KEY=your_service_role_key`
 
-**Migration 1 - Initial Schema** (`20240101000000_initial_schema.sql`):
-- ✅ Creates `patients` table with user info, contact details, emergency contacts
-- ✅ Creates `bookings` table with appointment scheduling
-- ✅ Sets up Row Level Security (RLS) policies
-- ✅ Creates basic `booking_status` enum: `pending`, `confirmed`, `waiting-room`, `in-call`, `completed`, `cancelled`
+2. **Other issues:**
+   - **Wrong DATABASE_URL**: Make sure it matches your Supabase project
+   - **Permission errors**: Verify your Supabase password is correct
+   - **Connection timeout**: Check if your Supabase project is paused (free tier)
+   - **Missing dependencies**: Run `yarn install` or `npm install`
 
-**Migration 2 - Telehealth Updates** (`20241201000000_telehealth_queue_updates.sql`):
-- ✅ Adds new telehealth statuses: `intake`, `ready-for-provider`, `provider`, `ready-for-discharge`, `discharged`
-- ✅ Adds `provider_name`, `chief_complaint`, `room_location`, `is_adhoc` columns to bookings
-- ✅ Creates database indexes for better performance
-- ✅ Adds helpful column comments
+### Database Schema
+
+The Prisma schema (`prisma/schema.prisma`) creates:
+
+**Patients Table**:
+
+- ✅ Patient demographics and contact information
+- ✅ Emergency contact details
+- ✅ Links to Supabase auth users
+
+**Bookings Table**:
+
+- ✅ Appointment scheduling with date/time
+- ✅ Booking types: `pre_booked`, `online`
+- ✅ Comprehensive status tracking: `pending`, `confirmed`, `intake`, `ready_for_provider`, `provider`, `ready_for_discharge`, `discharged`, `completed`, `cancelled`
+- ✅ Provider assignment and room management
+- ✅ Chief complaints and notes
+- ✅ Ad-hoc appointment support
+
+**Sample Data**:
+
+- ✅ 5 test patients with realistic information
+- ✅ 15+ sample bookings with various statuses
+- ✅ Multiple providers and room locations
+- ✅ Mix of appointment types and time slots
 
 ## Project Structure
 
@@ -188,8 +258,18 @@ src/
 
 ## Available Scripts
 
+### Development
+
 - `yarn dev` - Start development server
 - `yarn build` - Build for production
 - `yarn start` - Start production server
 - `yarn lint` - Run ESLint
 
+### Database Management
+
+- `npm run db:generate` - Generate Prisma client
+- `npm run db:migrate` - Push schema to database
+- `npm run db:seed` - Seed database with test data
+- `npm run db:studio` - Open Prisma Studio (database GUI)
+- `npm run db:reset` - Reset and reseed database (⚠️ deletes data)
+- `npm run db:check-env` - Verify environment setup

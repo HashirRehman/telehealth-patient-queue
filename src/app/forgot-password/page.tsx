@@ -29,7 +29,7 @@ export default function ForgotPasswordPage() {
         setSuccess(true)
       }
     } catch (err) {
-      setError('An unexpected error occurred')
+      setError(`An unexpected error occurred, ${err}`)
     } finally {
       setLoading(false)
     }
@@ -41,8 +41,18 @@ export default function ForgotPasswordPage() {
         <div className="text-center space-y-6">
           <div className="flex justify-center">
             <div className="h-12 w-12 rounded-xl bg-blue-600 flex items-center justify-center">
-              <svg className="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 7a2 2 0 012 2m4 0a6 6 0 01-7.743 5.743L11 17H9v2H7v2H4a1 1 0 01-1-1v-2.586a1 1 0 01.293-.707l5.964-5.964A6 6 0 1121 9z" />
+              <svg
+                className="w-8 h-8 text-white"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M15 7a2 2 0 012 2m4 0a6 6 0 01-7.743 5.743L11 17H9v2H7v2H4a1 1 0 01-1-1v-2.586a1 1 0 01.293-.707l5.964-5.964A6 6 0 1121 9z"
+                />
               </svg>
             </div>
           </div>
@@ -51,10 +61,9 @@ export default function ForgotPasswordPage() {
               Forgot your password?
             </h2>
             <p className="mt-2 text-sm text-gray-600 dark:text-gray-400">
-              {success 
-                ? "Check your email for reset instructions"
-                : "Enter your email address and we&apos;ll send you a link to reset your password"
-              }
+              {success
+                ? 'Check your email for reset instructions'
+                : 'Enter your email address and we&apos;ll send you a link to reset your password'}
             </p>
           </div>
         </div>
@@ -64,8 +73,18 @@ export default function ForgotPasswordPage() {
             <div className="text-center space-y-6">
               <div className="flex justify-center">
                 <div className="h-16 w-16 rounded-full bg-green-100 dark:bg-green-900/50 flex items-center justify-center">
-                  <svg className="w-8 h-8 text-green-600 dark:text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+                  <svg
+                    className="w-8 h-8 text-green-600 dark:text-green-400"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"
+                    />
                   </svg>
                 </div>
               </div>
@@ -74,10 +93,12 @@ export default function ForgotPasswordPage() {
                   Reset link sent!
                 </h3>
                 <p className="text-sm text-gray-600 dark:text-gray-400">
-                  We&apos;ve sent a password reset link to <strong>{email}</strong>
+                  We&apos;ve sent a password reset link to{' '}
+                  <strong>{email}</strong>
                 </p>
                 <p className="text-xs text-gray-500 dark:text-gray-500">
-                  Didn&apos;t receive the email? Check your spam folder or try again.
+                  Didn&apos;t receive the email? Check your spam folder or try
+                  again.
                 </p>
               </div>
               <div className="space-y-3">
@@ -102,15 +123,26 @@ export default function ForgotPasswordPage() {
             <form onSubmit={handleSubmit} className="space-y-6">
               {error && (
                 <div className="bg-red-50 dark:bg-red-900/50 border border-red-200 dark:border-red-800 text-red-600 dark:text-red-400 px-4 py-3 rounded-lg text-sm flex items-center gap-2">
-                  <svg className="w-4 h-4 shrink-0" fill="currentColor" viewBox="0 0 20 20">
-                    <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
+                  <svg
+                    className="w-4 h-4 shrink-0"
+                    fill="currentColor"
+                    viewBox="0 0 20 20"
+                  >
+                    <path
+                      fillRule="evenodd"
+                      d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z"
+                      clipRule="evenodd"
+                    />
                   </svg>
                   {error}
                 </div>
               )}
 
               <div>
-                <Label htmlFor="email" className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                <Label
+                  htmlFor="email"
+                  className="text-sm font-medium text-gray-700 dark:text-gray-300"
+                >
                   Email address
                 </Label>
                 <Input
@@ -118,7 +150,7 @@ export default function ForgotPasswordPage() {
                   type="email"
                   placeholder="Enter your email address"
                   value={email}
-                  onChange={(e) => setEmail(e.target.value)}
+                  onChange={e => setEmail(e.target.value)}
                   required
                   className="mt-1"
                   autoComplete="email"
@@ -126,16 +158,31 @@ export default function ForgotPasswordPage() {
                 />
               </div>
 
-              <Button 
-                type="submit" 
+              <Button
+                type="submit"
                 className="w-full relative py-6 bg-blue-600 hover:bg-blue-700 text-white transition-all duration-200"
                 disabled={loading}
               >
                 {loading ? (
                   <div className="flex items-center justify-center">
-                    <svg className="animate-spin -ml-1 mr-2 h-5 w-5" fill="none" viewBox="0 0 24 24">
-                      <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                      <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                    <svg
+                      className="animate-spin -ml-1 mr-2 h-5 w-5"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                    >
+                      <circle
+                        className="opacity-25"
+                        cx="12"
+                        cy="12"
+                        r="10"
+                        stroke="currentColor"
+                        strokeWidth="4"
+                      ></circle>
+                      <path
+                        className="opacity-75"
+                        fill="currentColor"
+                        d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                      ></path>
                     </svg>
                     Sending reset link...
                   </div>
@@ -150,8 +197,8 @@ export default function ForgotPasswordPage() {
         <div className="text-center">
           <p className="text-sm text-gray-600 dark:text-gray-400">
             Remember your password?{' '}
-            <Link 
-              href="/login" 
+            <Link
+              href="/login"
               className="font-semibold text-blue-600 hover:text-blue-500 dark:text-blue-400 dark:hover:text-blue-300"
             >
               Sign in
@@ -161,4 +208,4 @@ export default function ForgotPasswordPage() {
       </div>
     </div>
   )
-} 
+}

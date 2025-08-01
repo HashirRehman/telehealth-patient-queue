@@ -1,0 +1,81 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// Custom enums
+enum BookingType {
+  pre_booked
+  online
+
+  @@map("booking_type")
+}
+
+enum BookingStatus {
+  pending
+  confirmed
+  waiting_room
+  in_call
+  completed
+  cancelled
+  intake
+  ready_for_provider
+  provider
+  ready_for_discharge
+  discharged
+
+  @@map("booking_status")
+}
+
+// Patients table
+model Patient {
+  id                       String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  userId                   String?   @map("user_id") @db.Uuid
+  createdAt                DateTime  @default(now()) @map("created_at")
+  updatedAt                DateTime  @updatedAt @map("updated_at")
+  fullName                 String    @map("full_name")
+  email                    String
+  phone                    String?
+  dateOfBirth              DateTime? @map("date_of_birth") @db.Date
+  address                  String?
+  emergencyContactName     String?   @map("emergency_contact_name")
+  emergencyContactPhone    String?   @map("emergency_contact_phone")
+
+  // Relations
+  bookings                 Booking[]
+
+  @@map("patients")
+}
+
+// Bookings table
+model Booking {
+  id              String        @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  patientId       String        @map("patient_id") @db.Uuid
+  createdAt       DateTime      @default(now()) @map("created_at")
+  updatedAt       DateTime      @updatedAt @map("updated_at")
+  appointmentDate DateTime      @map("appointment_date") @db.Date
+  appointmentTime DateTime      @map("appointment_time") @db.Time
+  bookingType     BookingType   @default(online) @map("booking_type")
+  status          BookingStatus @default(pending)
+  notes           String?
+  createdBy       String        @map("created_by") @db.Uuid
+  providerName    String?       @map("provider_name")
+  chiefComplaint  String?       @map("chief_complaint")
+  roomLocation    String?       @map("room_location")
+  isAdhoc         Boolean       @default(false) @map("is_adhoc")
+
+  // Relations
+  patient         Patient       @relation(fields: [patientId], references: [id], onDelete: Cascade)
+
+  @@index([providerName], map: "idx_bookings_provider_name")
+  @@index([roomLocation], map: "idx_bookings_room_location")
+  @@index([isAdhoc], map: "idx_bookings_is_adhoc")
+  @@map("bookings")
+}
