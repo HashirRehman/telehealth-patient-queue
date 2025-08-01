@@ -1,5 +1,4 @@
 import { useEffect, useState, useCallback } from 'react'
-import { supabase } from '@/lib/supabase'
 import { QueueService } from '@/lib/queue'
 import type { BookingWithPatient } from '@/lib/database.types'
 
@@ -27,19 +26,19 @@ export function useRealtimeQueue() {
     intake: [],
     readyForProvider: [],
     provider: [],
-    stats: null
+    stats: null,
   })
   const [isLoading, setIsLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
-    
+
   const fetchQueueData = useCallback(async () => {
     try {
       setIsLoading(true)
       setError(null)
-      
+
       const [queueData, stats] = await Promise.all([
         QueueService.getQueueByStatus(),
-        QueueService.getQueueStats()
+        QueueService.getQueueStats(),
       ])
 
       setQueueState({
@@ -47,7 +46,7 @@ export function useRealtimeQueue() {
         intake: queueData.intake,
         readyForProvider: queueData.readyForProvider,
         provider: queueData.provider,
-        stats
+        stats,
       })
     } catch (err) {
       console.error('Error fetching queue data:', err)
@@ -148,7 +147,7 @@ export function useRealtimeQueue() {
     ...queueState,
     isLoading,
     error,
-    
+
     refreshQueue,
     moveToIntake,
     moveToReadyForProvider,
@@ -157,7 +156,7 @@ export function useRealtimeQueue() {
     dischargePatient,
     removeFromQueue,
     autoAdvanceQueue,
-    
-    clearError: () => setError(null)
+
+    clearError: () => setError(null),
   }
-} 
+}

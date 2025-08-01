@@ -8,17 +8,18 @@ import { Button } from '@/components/ui/button'
 import { CheckCircleIcon, XCircleIcon, Loader2Icon } from 'lucide-react'
 
 export default function AuthCallback() {
-  const [status, setStatus] = useState<'loading' | 'success' | 'error'>('loading')
+  const [status, setStatus] = useState<'loading' | 'success' | 'error'>(
+    'loading'
+  )
   const [message, setMessage] = useState('')
   const router = useRouter()
   const searchParams = useSearchParams()
-
 
   useEffect(() => {
     const handleAuthCallback = async () => {
       try {
         const { data, error } = await supabase.auth.getSession()
-        
+
         if (error) {
           console.error('Auth callback error:', error)
           setStatus('error')
@@ -29,7 +30,7 @@ export default function AuthCallback() {
         if (data.session) {
           setStatus('success')
           setMessage('Email verified successfully! Redirecting to dashboard...')
-          
+
           // Redirect to dashboard after a short delay
           setTimeout(() => {
             router.push('/dashboard')
@@ -38,7 +39,7 @@ export default function AuthCallback() {
           // Check for error in URL params
           const errorDescription = searchParams.get('error_description')
           const error = searchParams.get('error')
-          
+
           if (error || errorDescription) {
             setStatus('error')
             setMessage(errorDescription || error || 'Authentication failed')
@@ -46,7 +47,7 @@ export default function AuthCallback() {
             // No session but no error either - might be a valid callback
             setStatus('success')
             setMessage('Email verified! Please log in to continue.')
-            
+
             setTimeout(() => {
               router.push('/login?verified=true')
             }, 2000)
@@ -85,16 +86,13 @@ export default function AuthCallback() {
         </CardHeader>
         <CardContent className="text-center space-y-4">
           <p className="text-gray-600">{message}</p>
-          
+
           {status === 'error' && (
             <div className="space-y-2">
-              <Button 
-                onClick={() => router.push('/login')}
-                className="w-full"
-              >
+              <Button onClick={() => router.push('/login')} className="w-full">
                 Go to Login
               </Button>
-              <Button 
+              <Button
                 onClick={() => router.push('/signup')}
                 variant="outline"
                 className="w-full"
@@ -103,9 +101,9 @@ export default function AuthCallback() {
               </Button>
             </div>
           )}
-          
+
           {status === 'success' && (
-            <Button 
+            <Button
               onClick={() => router.push('/dashboard')}
               className="w-full"
             >
@@ -116,4 +114,4 @@ export default function AuthCallback() {
       </Card>
     </div>
   )
-} 
+}

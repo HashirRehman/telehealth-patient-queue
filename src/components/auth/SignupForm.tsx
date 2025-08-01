@@ -1,37 +1,37 @@
-"use client";
+'use client'
 
-import { useState } from "react";
-import { useRouter } from "next/navigation";
-import Link from "next/link";
-import { useAuth } from "@/contexts/AuthContext";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Card } from "@/components/ui/card";
+import { useState } from 'react'
+import { useRouter } from 'next/navigation'
+import Link from 'next/link'
+import { useAuth } from '@/contexts/AuthContext'
+import { Button } from '@/components/ui/button'
+import { Input } from '@/components/ui/input'
+import { Label } from '@/components/ui/label'
+import { Card } from '@/components/ui/card'
 
 export default function SignupForm() {
   const [formData, setFormData] = useState({
-    fullName: "",
-    email: "",
-    password: "",
-    confirmPassword: "",
-  });
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState("");
-  const [success, setSuccess] = useState(false);
+    fullName: '',
+    email: '',
+    password: '',
+    confirmPassword: '',
+  })
+  const [loading, setLoading] = useState(false)
+  const [error, setError] = useState('')
+  const [success, setSuccess] = useState(false)
 
-  const { signUp } = useAuth();
-  const router = useRouter();
+  const { signUp } = useAuth()
+  const router = useRouter()
 
   const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setLoading(true);
-    setError("");
+    e.preventDefault()
+    setLoading(true)
+    setError('')
 
     if (formData.password !== formData.confirmPassword) {
-      setError("Passwords do not match");
-      setLoading(false);
-      return;
+      setError('Passwords do not match')
+      setLoading(false)
+      return
     }
 
     try {
@@ -39,26 +39,26 @@ export default function SignupForm() {
         formData.email,
         formData.password,
         formData.fullName
-      );
+      )
       if (error) {
-        setError(error.message);
+        setError(error.message)
       } else {
-        setSuccess(true);
+        setSuccess(true)
         setTimeout(() => {
-          router.push("/login");
-        }, 2000);
+          router.push('/login')
+        }, 2000)
       }
-    } catch (err) {
-      setError("An unexpected error occurred");
+    } catch {
+      setError('An unexpected error occurred')
     } finally {
-      setLoading(false);
+      setLoading(false)
     }
-  };
+  }
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { name, value } = e.target;
-    setFormData((prev) => ({ ...prev, [name]: value }));
-  };
+    const { name, value } = e.target
+    setFormData(prev => ({ ...prev, [name]: value }))
+  }
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-blue-50 to-white dark:from-gray-900 dark:to-gray-800 flex items-center justify-center p-4">
@@ -238,7 +238,7 @@ export default function SignupForm() {
                   Creating account...
                 </div>
               ) : (
-                "Create account"
+                'Create account'
               )}
             </Button>
           </form>
@@ -246,7 +246,7 @@ export default function SignupForm() {
 
         <div className="text-center">
           <p className="text-sm text-gray-600 dark:text-gray-400">
-            Already have an account?{" "}
+            Already have an account?{' '}
             <Link
               href="/login"
               className="font-semibold text-blue-600 hover:text-blue-500 dark:text-blue-400 dark:hover:text-blue-300"
@@ -257,5 +257,5 @@ export default function SignupForm() {
         </div>
       </div>
     </div>
-  );
+  )
 }

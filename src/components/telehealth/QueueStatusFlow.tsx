@@ -1,4 +1,4 @@
-"use client";
+'use client'
 
 import {
   Card,
@@ -6,48 +6,48 @@ import {
   CardDescription,
   CardHeader,
   CardTitle,
-} from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
-import { ArrowRightIcon } from "lucide-react";
+} from '@/components/ui/card'
+import { Badge } from '@/components/ui/badge'
+import { ArrowRightIcon } from 'lucide-react'
 
 export function QueueStatusFlow() {
   const statusFlow = [
     {
-      status: "pending",
-      label: "Pending",
-      color: "bg-yellow-100 text-yellow-800",
+      status: 'pending',
+      label: 'Pending',
+      color: 'bg-yellow-100 text-yellow-800',
     },
     {
-      status: "confirmed",
-      label: "Confirmed",
-      color: "bg-blue-100 text-blue-800",
+      status: 'confirmed',
+      label: 'Confirmed',
+      color: 'bg-blue-100 text-blue-800',
     },
     {
-      status: "intake",
-      label: "Intake",
-      color: "bg-purple-100 text-purple-800",
+      status: 'intake',
+      label: 'Intake',
+      color: 'bg-purple-100 text-purple-800',
     },
     {
-      status: "ready-for-provider",
-      label: "Ready for Provider",
-      color: "bg-green-100 text-green-800",
+      status: 'ready-for-provider',
+      label: 'Ready for Provider',
+      color: 'bg-green-100 text-green-800',
     },
     {
-      status: "provider",
-      label: "In Call",
-      color: "bg-orange-100 text-orange-800",
+      status: 'provider',
+      label: 'In Call',
+      color: 'bg-orange-100 text-orange-800',
     },
     {
-      status: "ready-for-discharge",
-      label: "Ready for Discharge",
-      color: "bg-indigo-100 text-indigo-800",
+      status: 'ready-for-discharge',
+      label: 'Ready for Discharge',
+      color: 'bg-indigo-100 text-indigo-800',
     },
     {
-      status: "discharged",
-      label: "Discharged",
-      color: "bg-gray-100 text-gray-800",
+      status: 'discharged',
+      label: 'Discharged',
+      color: 'bg-gray-100 text-gray-800',
     },
-  ];
+  ]
 
   return (
     <Card className="mb-6">
@@ -93,5 +93,5 @@ export function QueueStatusFlow() {
         </div>
       </CardContent>
     </Card>
-  );
+  )
 }

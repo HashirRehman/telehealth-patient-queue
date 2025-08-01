@@ -4,22 +4,28 @@ import { useState } from 'react'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select'
 import { BookingWithPatient } from '@/lib/database.types'
 import { useBookings } from '@/hooks/useBookings'
 import { ConfirmDialog } from '@/components/common/ConfirmDialog'
-import { 
-  CalendarIcon, 
-  ClockIcon, 
-  UserIcon, 
-  PhoneIcon, 
+import {
+  CalendarIcon,
+  ClockIcon,
+  UserIcon,
+  PhoneIcon,
   MailIcon,
   FileTextIcon,
   VideoIcon,
   BuildingIcon,
   CheckCircleIcon,
   XCircleIcon,
-  AlertCircleIcon
+  AlertCircleIcon,
 } from 'lucide-react'
 
 interface BookingCardProps {
@@ -27,70 +33,73 @@ interface BookingCardProps {
 }
 
 const statusConfig = {
-  'pending': { 
-    color: 'bg-amber-50 text-amber-700 border-amber-200', 
+  pending: {
+    color: 'bg-amber-50 text-amber-700 border-amber-200',
     icon: AlertCircleIcon,
-    bgGradient: 'from-amber-50 to-amber-100'
+    bgGradient: 'from-amber-50 to-amber-100',
   },
-  'confirmed': { 
-    color: 'bg-blue-50 text-blue-700 border-blue-200', 
+  confirmed: {
+    color: 'bg-blue-50 text-blue-700 border-blue-200',
     icon: CheckCircleIcon,
-    bgGradient: 'from-blue-50 to-blue-100'
+    bgGradient: 'from-blue-50 to-blue-100',
   },
-  'intake': { 
-    color: 'bg-purple-50 text-purple-700 border-purple-200', 
+  intake: {
+    color: 'bg-purple-50 text-purple-700 border-purple-200',
     icon: FileTextIcon,
-    bgGradient: 'from-purple-50 to-purple-100'
+    bgGradient: 'from-purple-50 to-purple-100',
   },
-  'ready-for-provider': { 
-    color: 'bg-green-50 text-green-700 border-green-200', 
+  'ready-for-provider': {
+    color: 'bg-green-50 text-green-700 border-green-200',
     icon: CheckCircleIcon,
-    bgGradient: 'from-green-50 to-green-100'
+    bgGradient: 'from-green-50 to-green-100',
   },
-  'provider': { 
-    color: 'bg-orange-50 text-orange-700 border-orange-200', 
+  provider: {
+    color: 'bg-orange-50 text-orange-700 border-orange-200',
     icon: VideoIcon,
-    bgGradient: 'from-orange-50 to-orange-100'
+    bgGradient: 'from-orange-50 to-orange-100',
   },
-  'ready-for-discharge': { 
-    color: 'bg-indigo-50 text-indigo-700 border-indigo-200', 
+  'ready-for-discharge': {
+    color: 'bg-indigo-50 text-indigo-700 border-indigo-200',
     icon: CheckCircleIcon,
-    bgGradient: 'from-indigo-50 to-indigo-100'
+    bgGradient: 'from-indigo-50 to-indigo-100',
   },
-  'discharged': { 
-    color: 'bg-gray-50 text-gray-700 border-gray-200', 
+  discharged: {
+    color: 'bg-gray-50 text-gray-700 border-gray-200',
     icon: CheckCircleIcon,
-    bgGradient: 'from-gray-50 to-gray-100'
+    bgGradient: 'from-gray-50 to-gray-100',
   },
-  'cancelled': { 
-    color: 'bg-red-50 text-red-700 border-red-200', 
+  cancelled: {
+    color: 'bg-red-50 text-red-700 border-red-200',
     icon: XCircleIcon,
-    bgGradient: 'from-red-50 to-red-100'
-  }
+    bgGradient: 'from-red-50 to-red-100',
+  },
 }
 
 const typeConfig = {
-  'pre-booked': { 
-    color: 'bg-indigo-50 text-indigo-700 border-indigo-200', 
+  'pre-booked': {
+    color: 'bg-indigo-50 text-indigo-700 border-indigo-200',
     icon: BuildingIcon,
-    label: 'In-Person'
+    label: 'In-Person',
   },
-  'online': { 
-    color: 'bg-emerald-50 text-emerald-700 border-emerald-200', 
+  online: {
+    color: 'bg-emerald-50 text-emerald-700 border-emerald-200',
     icon: VideoIcon,
-    label: 'Telehealth'
-  }
+    label: 'Telehealth',
+  },
 }
 
 export default function BookingCard({ booking }: BookingCardProps) {
   const [isUpdating, setIsUpdating] = useState(false)
   const [isDeleting, setIsDeleting] = useState(false)
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false)
-  const { updateBookingStatus, updateBookingType, deleteBooking } = useBookings()
+  const { updateBookingStatus, updateBookingType, deleteBooking } =
+    useBookings()
 
-  const handleStatusChange = async (newStatus: BookingWithPatient['status']) => {
+  const handleStatusChange = async (
+    newStatus: BookingWithPatient['status']
+  ) => {
     if (isUpdating || isDeleting) return // Prevent concurrent operations
-    
+
     setIsUpdating(true)
     try {
       await updateBookingStatus(booking.id, newStatus)
@@ -101,9 +110,11 @@ export default function BookingCard({ booking }: BookingCardProps) {
     }
   }
 
-  const handleTypeChange = async (newType: BookingWithPatient['booking_type']) => {
+  const handleTypeChange = async (
+    newType: BookingWithPatient['booking_type']
+  ) => {
     if (isUpdating || isDeleting) return // Prevent concurrent operations
-    
+
     setIsUpdating(true)
     try {
       await updateBookingType(booking.id, newType)
@@ -121,7 +132,7 @@ export default function BookingCard({ booking }: BookingCardProps) {
 
   const handleDeleteConfirm = async (): Promise<void> => {
     if (isDeleting || isUpdating) return // Prevent double execution
-    
+
     setIsDeleting(true)
     try {
       await deleteBooking(booking.id)
@@ -129,7 +140,7 @@ export default function BookingCard({ booking }: BookingCardProps) {
       setShowDeleteConfirm(false)
     } catch (error) {
       console.error('Error deleting booking:', error)
-      
+
       // Extract meaningful error message
       let errorMessage = 'An unexpected error occurred'
       if (error && typeof error === 'object') {
@@ -141,9 +152,11 @@ export default function BookingCard({ booking }: BookingCardProps) {
       } else if (typeof error === 'string') {
         errorMessage = error
       }
-      
+
       // Show user-friendly error and keep dialog open
-      alert(`Failed to delete booking: ${errorMessage}\n\nPlease try again or contact support if the problem persists.`)
+      alert(
+        `Failed to delete booking: ${errorMessage}\n\nPlease try again or contact support if the problem persists.`
+      )
       throw error // Re-throw to prevent dialog from closing
     } finally {
       setIsDeleting(false)
@@ -152,16 +165,19 @@ export default function BookingCard({ booking }: BookingCardProps) {
 
   const getStatusLabel = (status: string) => {
     const labels: Record<string, string> = {
-      'pending': 'Pending',
-      'confirmed': 'Confirmed',
-      'intake': 'In Intake',
+      pending: 'Pending',
+      confirmed: 'Confirmed',
+      intake: 'In Intake',
       'ready-for-provider': 'Ready',
-      'provider': 'In Call',
+      provider: 'In Call',
       'ready-for-discharge': 'Ready to Discharge',
-      'discharged': 'Discharged',
-      'cancelled': 'Cancelled'
+      discharged: 'Discharged',
+      cancelled: 'Cancelled',
     }
-    return labels[status] || status.replace(/-/g, ' ').replace(/\b\w/g, l => l.toUpperCase())
+    return (
+      labels[status] ||
+      status.replace(/-/g, ' ').replace(/\b\w/g, l => l.toUpperCase())
+    )
   }
 
   const StatusIcon = statusConfig[booking.status]?.icon || AlertCircleIcon
@@ -174,7 +190,7 @@ export default function BookingCard({ booking }: BookingCardProps) {
       weekday: 'short',
       month: 'short',
       day: 'numeric',
-      year: 'numeric'
+      year: 'numeric',
     })
   }
 
@@ -182,53 +198,62 @@ export default function BookingCard({ booking }: BookingCardProps) {
     return new Date(`1970-01-01T${time}`).toLocaleTimeString('en-US', {
       hour: 'numeric',
       minute: '2-digit',
-      hour12: true
+      hour12: true,
     })
   }
 
   return (
-    <Card className={`w-full hover:shadow-lg transition-all duration-300 border-l-4 border-l-blue-500 bg-gradient-to-br ${statusStyle.bgGradient} backdrop-blur-sm`}>
+    <Card
+      className={`w-full hover:shadow-lg transition-all duration-300 border-l-4 border-l-blue-500 bg-gradient-to-br ${statusStyle.bgGradient} backdrop-blur-sm`}
+    >
       <CardHeader className="pb-4">
         <div className="flex justify-between items-start">
           <div className="flex items-start space-x-4">
             <div className="w-12 h-12 bg-gradient-to-br from-blue-500 to-blue-600 rounded-full flex items-center justify-center shadow-lg">
               <UserIcon className="w-6 h-6 text-white" />
             </div>
-            
+
             <div className="flex-1">
               <CardTitle className="text-xl font-bold text-gray-800 mb-1">
                 {booking.patient.full_name}
               </CardTitle>
-              
+
               <div className="space-y-1">
                 <div className="flex items-center text-sm text-gray-600">
                   <MailIcon className="w-4 h-4 mr-2 text-gray-400" />
                   {booking.patient.email}
                 </div>
-                
+
                 {booking.patient.phone && (
                   <div className="flex items-center text-sm text-gray-600">
                     <PhoneIcon className="w-4 h-4 mr-2 text-gray-400" />
                     {booking.patient.phone}
                   </div>
                 )}
-                
+
                 {booking.patient.date_of_birth && (
                   <div className="flex items-center text-sm text-gray-600">
                     <CalendarIcon className="w-4 h-4 mr-2 text-gray-400" />
-                    DOB: {new Date(booking.patient.date_of_birth).toLocaleDateString()}
+                    DOB:{' '}
+                    {new Date(
+                      booking.patient.date_of_birth
+                    ).toLocaleDateString()}
                   </div>
                 )}
               </div>
             </div>
           </div>
-          
+
           <div className="flex flex-col gap-2 items-end">
-            <Badge className={`${statusStyle.color} px-2 py-1 text-xs font-medium shadow-sm whitespace-nowrap`}>
+            <Badge
+              className={`${statusStyle.color} px-2 py-1 text-xs font-medium shadow-sm whitespace-nowrap`}
+            >
               <StatusIcon className="w-3 h-3 mr-1 flex-shrink-0" />
               <span className="truncate">{getStatusLabel(booking.status)}</span>
             </Badge>
-            <Badge className={`${typeStyle.color} px-2 py-1 text-xs font-medium shadow-sm whitespace-nowrap`}>
+            <Badge
+              className={`${typeStyle.color} px-2 py-1 text-xs font-medium shadow-sm whitespace-nowrap`}
+            >
               <TypeIcon className="w-3 h-3 mr-1 flex-shrink-0" />
               <span className="truncate">{typeStyle.label}</span>
             </Badge>
@@ -242,21 +267,25 @@ export default function BookingCard({ booking }: BookingCardProps) {
             <CalendarIcon className="w-4 h-4 mr-2 text-blue-500" />
             Appointment Details
           </h4>
-          
+
           <div className="grid grid-cols-2 gap-4">
             <div className="flex items-center">
               <CalendarIcon className="w-4 h-4 mr-2 text-gray-400" />
               <div>
                 <p className="text-xs text-gray-500">Date</p>
-                <p className="text-sm font-medium">{formatDate(booking.appointment_date)}</p>
+                <p className="text-sm font-medium">
+                  {formatDate(booking.appointment_date)}
+                </p>
               </div>
             </div>
-            
+
             <div className="flex items-center">
               <ClockIcon className="w-4 h-4 mr-2 text-gray-400" />
               <div>
                 <p className="text-xs text-gray-500">Time</p>
-                <p className="text-sm font-medium">{formatTime(booking.appointment_time)}</p>
+                <p className="text-sm font-medium">
+                  {formatTime(booking.appointment_time)}
+                </p>
               </div>
             </div>
           </div>
@@ -268,17 +297,21 @@ export default function BookingCard({ booking }: BookingCardProps) {
                   <UserIcon className="w-4 h-4 mr-2 text-gray-400" />
                   <div>
                     <p className="text-xs text-gray-500">Provider</p>
-                    <p className="text-sm font-medium">{booking.provider_name}</p>
+                    <p className="text-sm font-medium">
+                      {booking.provider_name}
+                    </p>
                   </div>
                 </div>
               )}
-              
+
               {booking.chief_complaint && (
                 <div className="flex items-start">
                   <FileTextIcon className="w-4 h-4 mr-2 text-gray-400 mt-0.5" />
                   <div>
                     <p className="text-xs text-gray-500">Chief Complaint</p>
-                    <p className="text-sm text-gray-700">{booking.chief_complaint}</p>
+                    <p className="text-sm text-gray-700">
+                      {booking.chief_complaint}
+                    </p>
                   </div>
                 </div>
               )}
@@ -300,7 +333,7 @@ export default function BookingCard({ booking }: BookingCardProps) {
 
         <div className="bg-white/60 rounded-lg p-4 space-y-3 shadow-sm">
           <h4 className="font-semibold text-gray-800">Quick Actions</h4>
-          
+
           <div className="grid grid-cols-2 gap-3">
             <div>
               <label className="text-xs text-gray-500 mb-1 block">Status</label>
@@ -316,9 +349,13 @@ export default function BookingCard({ booking }: BookingCardProps) {
                   <SelectItem value="pending">Pending</SelectItem>
                   <SelectItem value="confirmed">Confirmed</SelectItem>
                   <SelectItem value="intake">Intake</SelectItem>
-                  <SelectItem value="ready-for-provider">Ready for Provider</SelectItem>
+                  <SelectItem value="ready-for-provider">
+                    Ready for Provider
+                  </SelectItem>
                   <SelectItem value="provider">Provider</SelectItem>
-                  <SelectItem value="ready-for-discharge">Ready for Discharge</SelectItem>
+                  <SelectItem value="ready-for-discharge">
+                    Ready for Discharge
+                  </SelectItem>
                   <SelectItem value="discharged">Discharged</SelectItem>
                   <SelectItem value="cancelled">Cancelled</SelectItem>
                 </SelectContent>
@@ -354,24 +391,31 @@ export default function BookingCard({ booking }: BookingCardProps) {
               <XCircleIcon className="w-4 h-4 mr-1" />
               {isDeleting ? 'Deleting...' : 'Delete'}
             </Button>
-            
-            {booking.booking_type === 'online' && booking.status === 'provider' && (
-              <Button
-                onClick={() => window.open(`/video-call/${booking.id}`, '_blank')}
-                size="sm" 
-                className="flex-1 bg-green-600 hover:bg-green-700"
-              >
-                <VideoIcon className="w-4 h-4 mr-1" />
-                Join Call
-              </Button>
-            )}
+
+            {booking.booking_type === 'online' &&
+              booking.status === 'provider' && (
+                <Button
+                  onClick={() =>
+                    window.open(`/video-call/${booking.id}`, '_blank')
+                  }
+                  size="sm"
+                  className="flex-1 bg-green-600 hover:bg-green-700"
+                >
+                  <VideoIcon className="w-4 h-4 mr-1" />
+                  Join Call
+                </Button>
+              )}
           </div>
         </div>
 
         <div className="text-xs text-gray-500 border-t pt-3">
           <div className="flex justify-between">
-            <span>Created: {new Date(booking.created_at).toLocaleString()}</span>
-            <span>Updated: {new Date(booking.updated_at).toLocaleString()}</span>
+            <span>
+              Created: {new Date(booking.created_at).toLocaleString()}
+            </span>
+            <span>
+              Updated: {new Date(booking.updated_at).toLocaleString()}
+            </span>
           </div>
         </div>
       </CardContent>
@@ -379,7 +423,8 @@ export default function BookingCard({ booking }: BookingCardProps) {
       <ConfirmDialog
         isOpen={showDeleteConfirm}
         onClose={() => {
-          if (!isDeleting) { // Only allow closing if not actively deleting
+          if (!isDeleting) {
+            // Only allow closing if not actively deleting
             setShowDeleteConfirm(false)
           }
         }}
@@ -393,4 +438,4 @@ export default function BookingCard({ booking }: BookingCardProps) {
       />
     </Card>
   )
-} 
+}

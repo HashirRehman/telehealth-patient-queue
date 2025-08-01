@@ -22,19 +22,21 @@ interface NotificationSystemProps {
   onAction?: (notification: Notification) => void
 }
 
-export function NotificationSystem({ 
-  notifications, 
-  onDismiss, 
-  onAction 
+export function NotificationSystem({
+  notifications,
+  onDismiss,
+  onAction,
 }: NotificationSystemProps) {
-  const [visibleNotifications, setVisibleNotifications] = useState<Notification[]>([])
+  const [visibleNotifications, setVisibleNotifications] = useState<
+    Notification[]
+  >([])
 
   useEffect(() => {
     setVisibleNotifications(notifications)
 
     const timers = notifications
       .filter(n => n.autoHide)
-      .map(notification => 
+      .map(notification =>
         setTimeout(() => {
           onDismiss(notification.id)
         }, 5000)
@@ -49,26 +51,66 @@ export function NotificationSystem({
     switch (type) {
       case 'info':
         return (
-          <svg className="w-5 h-5 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+          <svg
+            className="w-5 h-5 text-blue-500"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth={2}
+              d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+            />
           </svg>
         )
       case 'success':
         return (
-          <svg className="w-5 h-5 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+          <svg
+            className="w-5 h-5 text-green-500"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth={2}
+              d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
+            />
           </svg>
         )
       case 'warning':
         return (
-          <svg className="w-5 h-5 text-yellow-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.732 16c-.77.833.192 2.5 1.732 2.5z" />
+          <svg
+            className="w-5 h-5 text-yellow-500"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth={2}
+              d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.732 16c-.77.833.192 2.5 1.732 2.5z"
+            />
           </svg>
         )
       case 'error':
         return (
-          <svg className="w-5 h-5 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+          <svg
+            className="w-5 h-5 text-red-500"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth={2}
+              d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+            />
           </svg>
         )
     }
@@ -93,8 +135,8 @@ export function NotificationSystem({
 
   return (
     <div className="fixed top-4 right-4 z-50 space-y-2 max-w-sm">
-      {visibleNotifications.map((notification) => (
-        <Card 
+      {visibleNotifications.map(notification => (
+        <Card
           key={notification.id}
           className={`${getNotificationColors(notification.type)} shadow-lg animate-in slide-in-from-right duration-300`}
         >
@@ -103,7 +145,7 @@ export function NotificationSystem({
               <div className="flex-shrink-0">
                 {getNotificationIcon(notification.type)}
               </div>
-              
+
               <div className="flex-1 min-w-0">
                 <div className="flex items-center justify-between mb-1">
                   <h4 className="text-sm font-medium text-gray-900">
@@ -113,21 +155,21 @@ export function NotificationSystem({
                     {notification.timestamp.toLocaleTimeString('en-US', {
                       hour: 'numeric',
                       minute: '2-digit',
-                      hour12: true
+                      hour12: true,
                     })}
                   </Badge>
                 </div>
-                
+
                 <p className="text-sm text-gray-600 mb-2">
                   {notification.message}
                 </p>
-                
+
                 {notification.patientName && (
                   <p className="text-xs text-gray-500 mb-2">
                     Patient: {notification.patientName}
                   </p>
                 )}
-                
+
                 <div className="flex items-center gap-2">
                   {onAction && notification.bookingId && (
                     <Button
@@ -139,7 +181,7 @@ export function NotificationSystem({
                       View
                     </Button>
                   )}
-                  
+
                   <Button
                     size="sm"
                     variant="ghost"
@@ -170,7 +212,7 @@ export const createNotification = (
   message,
   timestamp: new Date(),
   autoHide: type === 'success' || type === 'info',
-  ...options
+  ...options,
 })
 
 export const QueueNotifications = {
@@ -222,11 +264,15 @@ export const QueueNotifications = {
       { autoHide: true }
     ),
 
-  appointmentReminder: (patientName: string, bookingId: string, minutesUntil: number) =>
+  appointmentReminder: (
+    patientName: string,
+    bookingId: string,
+    minutesUntil: number
+  ) =>
     createNotification(
       'info',
       'Upcoming Appointment',
       `${patientName} has an appointment in ${minutesUntil} minutes.`,
       { patientName, bookingId, autoHide: false }
-    )
-} 
+    ),
+}

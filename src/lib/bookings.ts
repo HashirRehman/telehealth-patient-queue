@@ -1,15 +1,25 @@
 import { supabase } from './supabase'
-import { Booking, BookingInsert, BookingUpdate, BookingWithPatient, Patient, PatientUpdate, PatientInsert } from './database.types'
+import {
+  Booking,
+  BookingInsert,
+  BookingUpdate,
+  BookingWithPatient,
+  Patient,
+  PatientUpdate,
+  PatientInsert,
+} from './database.types'
 
 export class BookingService {
   // Get all bookings with patient information
   static async getBookings(): Promise<BookingWithPatient[]> {
     const { data, error } = await supabase
       .from('bookings')
-      .select(`
+      .select(
+        `
         *,
         patient:patients(*)
-      `)
+      `
+      )
       .order('appointment_date', { ascending: true })
       .order('appointment_time', { ascending: true })
 
@@ -18,13 +28,17 @@ export class BookingService {
   }
 
   // Get bookings by status
-  static async getBookingsByStatus(status: Booking['status']): Promise<BookingWithPatient[]> {
+  static async getBookingsByStatus(
+    status: Booking['status']
+  ): Promise<BookingWithPatient[]> {
     const { data, error } = await supabase
       .from('bookings')
-      .select(`
+      .select(
+        `
         *,
         patient:patients(*)
-      `)
+      `
+      )
       .eq('status', status)
       .order('appointment_date', { ascending: true })
       .order('appointment_time', { ascending: true })
@@ -34,13 +48,17 @@ export class BookingService {
   }
 
   // Get bookings by type
-  static async getBookingsByType(type: Booking['booking_type']): Promise<BookingWithPatient[]> {
+  static async getBookingsByType(
+    type: Booking['booking_type']
+  ): Promise<BookingWithPatient[]> {
     const { data, error } = await supabase
       .from('bookings')
-      .select(`
+      .select(
+        `
         *,
         patient:patients(*)
-      `)
+      `
+      )
       .eq('booking_type', type)
       .order('appointment_date', { ascending: true })
       .order('appointment_time', { ascending: true })
@@ -51,15 +69,19 @@ export class BookingService {
 
   // Get bookings for current user (patient view)
   static async getMyBookings(): Promise<BookingWithPatient[]> {
-    const { data: { user } } = await supabase.auth.getUser()
+    const {
+      data: { user },
+    } = await supabase.auth.getUser()
     if (!user) throw new Error('User not authenticated')
 
     const { data, error } = await supabase
       .from('bookings')
-      .select(`
+      .select(
+        `
         *,
         patient:patients(*)
-      `)
+      `
+      )
       .eq('created_by', user.id)
       .order('appointment_date', { ascending: true })
       .order('appointment_time', { ascending: true })
@@ -70,7 +92,9 @@ export class BookingService {
 
   // Get current user's patient records (can have multiple)
   static async getMyPatientRecords(): Promise<Patient[]> {
-    const { data: { user } } = await supabase.auth.getUser()
+    const {
+      data: { user },
+    } = await supabase.auth.getUser()
     if (!user) throw new Error('User not authenticated')
 
     const { data, error } = await supabase
@@ -84,8 +108,13 @@ export class BookingService {
   }
 
   // Create a new booking for a specific patient
-  static async createBooking(patientId: string, bookingData: Omit<BookingInsert, 'patient_id' | 'created_by'>) {
-    const { data: { user } } = await supabase.auth.getUser()
+  static async createBooking(
+    patientId: string,
+    bookingData: Omit<BookingInsert, 'patient_id' | 'created_by'>
+  ) {
+    const {
+      data: { user },
+    } = await supabase.auth.getUser()
     if (!user) throw new Error('User not authenticated')
 
     const { data, error } = await supabase
@@ -93,12 +122,14 @@ export class BookingService {
       .insert({
         ...bookingData,
         patient_id: patientId,
-        created_by: user.id
+        created_by: user.id,
       })
-      .select(`
+      .select(
+        `
         *,
         patient:patients(*)
-      `)
+      `
+      )
       .single()
 
     if (error) throw error
@@ -106,15 +137,20 @@ export class BookingService {
   }
 
   // Update a booking
-  static async updateBooking(id: string, updates: BookingUpdate): Promise<BookingWithPatient> {
+  static async updateBooking(
+    id: string,
+    updates: BookingUpdate
+  ): Promise<BookingWithPatient> {
     const { data, error } = await supabase
       .from('bookings')
       .update(updates)
       .eq('id', id)
-      .select(`
+      .select(
+        `
         *,
         patient:patients(*)
-      `)
+      `
+      )
       .single()
 
     if (error) throw error
@@ -127,16 +163,16 @@ export class BookingService {
   }
 
   // Update booking type
-  static async updateBookingType(id: string, booking_type: Booking['booking_type']) {
+  static async updateBookingType(
+    id: string,
+    booking_type: Booking['booking_type']
+  ) {
     return this.updateBooking(id, { booking_type })
   }
 
   // Delete a booking
   static async deleteBooking(id: string) {
-    const { error } = await supabase
-      .from('bookings')
-      .delete()
-      .eq('id', id)
+    const { error } = await supabase.from('bookings').delete().eq('id', id)
 
     if (error) throw error
   }
@@ -152,12 +188,13 @@ export class BookingService {
     const stats = {
       total: data.length,
       byStatus: {} as Record<string, number>,
-      byType: {} as Record<string, number>
+      byType: {} as Record<string, number>,
     }
 
     data.forEach(booking => {
       stats.byStatus[booking.status] = (stats.byStatus[booking.status] || 0) + 1
-      stats.byType[booking.booking_type] = (stats.byType[booking.booking_type] || 0) + 1
+      stats.byType[booking.booking_type] =
+        (stats.byType[booking.booking_type] || 0) + 1
     })
 
     return stats
@@ -171,15 +208,19 @@ export class PatientService {
   }
 
   // Create a new patient record
-  static async createPatient(patientData: Omit<PatientInsert, 'user_id'>): Promise<Patient> {
-    const { data: { user } } = await supabase.auth.getUser()
+  static async createPatient(
+    patientData: Omit<PatientInsert, 'user_id'>
+  ): Promise<Patient> {
+    const {
+      data: { user },
+    } = await supabase.auth.getUser()
     if (!user) throw new Error('User not authenticated')
 
     const { data, error } = await supabase
       .from('patients')
       .insert({
         ...patientData,
-        user_id: user.id
+        user_id: user.id,
       })
       .select()
       .single()
@@ -189,12 +230,14 @@ export class PatientService {
   }
 
   // Create a standalone patient (no user_id)
-  static async createStandalonePatient(patientData: PatientInsert): Promise<Patient> {
+  static async createStandalonePatient(
+    patientData: PatientInsert
+  ): Promise<Patient> {
     const { data, error } = await supabase
       .from('patients')
       .insert({
         ...patientData,
-        user_id: null
+        user_id: null,
       })
       .select()
       .single()
@@ -204,7 +247,10 @@ export class PatientService {
   }
 
   // Update patient profile
-  static async updatePatient(patientId: string, updates: PatientUpdate): Promise<Patient> {
+  static async updatePatient(
+    patientId: string,
+    updates: PatientUpdate
+  ): Promise<Patient> {
     const { data, error } = await supabase
       .from('patients')
       .update(updates)
@@ -263,4 +309,4 @@ export class PatientService {
     if (error) throw error
     return data
   }
-} 
+}

@@ -19,7 +19,9 @@ export default function VideoCall() {
   const [isMuted, setIsMuted] = useState(false)
   const [isVideoOff, setIsVideoOff] = useState(false)
   const [callDuration, setCallDuration] = useState(0)
-  const [connectionStatus, setConnectionStatus] = useState<'connecting' | 'connected' | 'disconnected'>('connecting')
+  const [connectionStatus, setConnectionStatus] = useState<
+    'connecting' | 'connected' | 'disconnected'
+  >('connecting')
 
   const localVideoRef = useRef<HTMLVideoElement>(null)
   const remoteVideoRef = useRef<HTMLVideoElement>(null)
@@ -41,11 +43,13 @@ export default function VideoCall() {
 
   useEffect(() => {
     let interval: NodeJS.Timeout | null = null
-    
+
     if (isCallStarted && callStartTimeRef.current) {
       interval = setInterval(() => {
         const now = new Date()
-        const duration = Math.floor((now.getTime() - callStartTimeRef.current!.getTime()) / 1000)
+        const duration = Math.floor(
+          (now.getTime() - callStartTimeRef.current!.getTime()) / 1000
+        )
         setCallDuration(duration)
       }, 1000)
     }
@@ -60,7 +64,7 @@ export default function VideoCall() {
       setIsLoading(true)
       const bookings = await BookingService.getBookings()
       const foundBooking = bookings.find(b => b.id === bookingId)
-      
+
       if (!foundBooking) {
         router.push('/dashboard')
         return
@@ -69,7 +73,6 @@ export default function VideoCall() {
       setBooking(foundBooking)
 
       if (foundBooking.status !== 'provider') {
-
         router.push('/dashboard')
       }
     } catch (error) {
@@ -85,11 +88,11 @@ export default function VideoCall() {
       setConnectionStatus('connecting')
       const stream = await navigator.mediaDevices.getUserMedia({
         video: true,
-        audio: true
+        audio: true,
       })
 
       localStreamRef.current = stream
-      
+
       if (localVideoRef.current) {
         localVideoRef.current.srcObject = stream
       }
@@ -99,23 +102,30 @@ export default function VideoCall() {
         setIsCallStarted(true)
         callStartTimeRef.current = new Date()
       }, 2000)
-
     } catch (error: unknown) {
       console.error('❌ Error starting video call:', error)
       setConnectionStatus('disconnected')
-      
+
       if (error instanceof Error) {
         if (error.name === 'NotAllowedError') {
-          alert('Camera/microphone access denied. Please enable permissions and try again.')
+          alert(
+            'Camera/microphone access denied. Please enable permissions and try again.'
+          )
         } else if (error.name === 'NotFoundError') {
-          alert('No camera or microphone found. Please connect a device and try again.')
+          alert(
+            'No camera or microphone found. Please connect a device and try again.'
+          )
         } else if (error.name === 'NotReadableError') {
-          alert('Camera/microphone is being used by another application. Please close other apps and try again.')
+          alert(
+            'Camera/microphone is being used by another application. Please close other apps and try again.'
+          )
         } else {
           alert(`Unable to access camera/microphone: ${error.message}`)
         }
       } else {
-        alert('Unable to access camera/microphone. Please check your permissions and try again.')
+        alert(
+          'Unable to access camera/microphone. Please check your permissions and try again.'
+        )
       }
     }
   }
@@ -128,7 +138,9 @@ export default function VideoCall() {
 
     if (booking) {
       try {
-        await BookingService.updateBooking(booking.id, { status: 'ready-for-discharge' })
+        await BookingService.updateBooking(booking.id, {
+          status: 'ready-for-discharge',
+        })
       } catch (error) {
         console.error('Error updating booking status:', error)
       }
@@ -191,17 +203,25 @@ export default function VideoCall() {
       <div className="max-w-7xl mx-auto px-4 py-4">
         <div className="flex justify-between items-center mb-6">
           <div>
-            <h1 className="text-2xl font-bold text-white">Video Consultation</h1>
+            <h1 className="text-2xl font-bold text-white">
+              Video Consultation
+            </h1>
             <p className="text-gray-300">{booking.patient.full_name}</p>
           </div>
           <div className="flex items-center gap-4">
             {isCallStarted && (
               <div className="flex items-center gap-2">
                 <div className="w-3 h-3 bg-green-500 rounded-full animate-pulse"></div>
-                <span className="text-white font-mono">{formatDuration(callDuration)}</span>
+                <span className="text-white font-mono">
+                  {formatDuration(callDuration)}
+                </span>
               </div>
             )}
-            <Badge variant={connectionStatus === 'connected' ? 'default' : 'secondary'}>
+            <Badge
+              variant={
+                connectionStatus === 'connected' ? 'default' : 'secondary'
+              }
+            >
               {connectionStatus}
             </Badge>
           </div>
@@ -211,7 +231,9 @@ export default function VideoCall() {
           <div className="max-w-2xl mx-auto">
             <Card className="bg-gray-800 border-gray-700">
               <CardHeader>
-                <CardTitle className="text-white text-center">Ready to Start Video Call?</CardTitle>
+                <CardTitle className="text-white text-center">
+                  Ready to Start Video Call?
+                </CardTitle>
               </CardHeader>
               <CardContent className="space-y-6">
                 <div className="relative aspect-video bg-gray-700 rounded-lg overflow-hidden">
@@ -236,7 +258,9 @@ export default function VideoCall() {
                     </div>
                     <div className="flex items-center gap-2">
                       <div className="w-2 h-2 bg-green-500 rounded-full"></div>
-                                             <span>Ensure you&apos;re in a quiet, well-lit environment</span>
+                      <span>
+                        Ensure you&apos;re in a quiet, well-lit environment
+                      </span>
                     </div>
                     <div className="flex items-center gap-2">
                       <div className="w-2 h-2 bg-green-500 rounded-full"></div>
@@ -256,14 +280,20 @@ export default function VideoCall() {
                         <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
                         Connecting...
                       </div>
-                    ) : 'Start Video Call'}
+                    ) : (
+                      'Start Video Call'
+                    )}
                   </Button>
-                  <Button variant="outline" onClick={() => router.push('/dashboard')}>
+                  <Button
+                    variant="outline"
+                    onClick={() => router.push('/dashboard')}
+                  >
                     Cancel
                   </Button>
-                  
+
                   <div className="absolute -bottom-8 left-1/2 transform -translate-x-1/2 text-xs text-gray-400">
-                    Status: {connectionStatus} | Started: {isCallStarted ? 'Yes' : 'No'}
+                    Status: {connectionStatus} | Started:{' '}
+                    {isCallStarted ? 'Yes' : 'No'}
                   </div>
                 </div>
               </CardContent>
@@ -282,12 +312,24 @@ export default function VideoCall() {
                 <div className="absolute inset-0 flex items-center justify-center">
                   <div className="text-center">
                     <div className="w-24 h-24 bg-gray-600 rounded-full flex items-center justify-center mx-auto mb-4">
-                      <svg className="w-12 h-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                      <svg
+                        className="w-12 h-12 text-gray-400"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth={2}
+                          d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"
+                        />
                       </svg>
                     </div>
                     <p className="text-white">{booking.patient.full_name}</p>
-                    <p className="text-gray-400 text-sm">Waiting to connect...</p>
+                    <p className="text-gray-400 text-sm">
+                      Waiting to connect...
+                    </p>
                   </div>
                 </div>
                 <div className="absolute bottom-4 left-4">
@@ -310,8 +352,18 @@ export default function VideoCall() {
                   <div className="absolute inset-0 bg-gray-800 flex items-center justify-center">
                     <div className="text-center">
                       <div className="w-16 h-16 bg-gray-600 rounded-full flex items-center justify-center mx-auto mb-2">
-                        <svg className="w-8 h-8 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.878 9.878L3 3m6.878 6.878L21 21" />
+                        <svg
+                          className="w-8 h-8 text-gray-400"
+                          fill="none"
+                          stroke="currentColor"
+                          viewBox="0 0 24 24"
+                        >
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            strokeWidth={2}
+                            d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.878 9.878L3 3m6.878 6.878L21 21"
+                          />
                         </svg>
                       </div>
                       <p className="text-gray-400 text-sm">Camera Off</p>
@@ -323,31 +375,61 @@ export default function VideoCall() {
 
             <div className="flex justify-center items-center gap-4 py-4">
               <Button
-                variant={isMuted ? "destructive" : "secondary"}
+                variant={isMuted ? 'destructive' : 'secondary'}
                 size="lg"
                 onClick={toggleMute}
                 className="rounded-full w-14 h-14"
               >
-                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <svg
+                  className="w-6 h-6"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
                   {isMuted ? (
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5.586 15H4a1 1 0 01-1-1v-4a1 1 0 011-1h1.586l4.707-4.707C10.923 3.663 12 4.109 12 5v14c0 .891-1.077 1.337-1.707.707L5.586 15z" />
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M5.586 15H4a1 1 0 01-1-1v-4a1 1 0 011-1h1.586l4.707-4.707C10.923 3.663 12 4.109 12 5v14c0 .891-1.077 1.337-1.707.707L5.586 15z"
+                    />
                   ) : (
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 01-3-3V5a3 3 0 116 0v6a3 3 0 01-3 3z" />
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 01-3-3V5a3 3 0 116 0v6a3 3 0 01-3 3z"
+                    />
                   )}
                 </svg>
               </Button>
 
               <Button
-                variant={isVideoOff ? "destructive" : "secondary"}
+                variant={isVideoOff ? 'destructive' : 'secondary'}
                 size="lg"
                 onClick={toggleVideo}
                 className="rounded-full w-14 h-14"
               >
-                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <svg
+                  className="w-6 h-6"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
                   {isVideoOff ? (
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.878 9.878L3 3m6.878 6.878L21 21" />
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.878 9.878L3 3m6.878 6.878L21 21"
+                    />
                   ) : (
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z" />
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z"
+                    />
                   )}
                 </svg>
               </Button>
@@ -358,8 +440,18 @@ export default function VideoCall() {
                 onClick={endCall}
                 className="rounded-full w-14 h-14"
               >
-                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 8l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2M3 3l1.664 1.664M21 21l-1.5-1.5m-5.485-1.242L12 17l-1.5-1.5m0 0L5.485 10.485m0 0L4 9M9 5l2-2 2 2m0 0L9 9l4 4 2-2" />
+                <svg
+                  className="w-6 h-6"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M16 8l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2M3 3l1.664 1.664M21 21l-1.5-1.5m-5.485-1.242L12 17l-1.5-1.5m0 0L5.485 10.485m0 0L4 9M9 5l2-2 2 2m0 0L9 9l4 4 2-2"
+                  />
                 </svg>
               </Button>
             </div>
@@ -368,4 +460,4 @@ export default function VideoCall() {
       </div>
     </div>
   )
-} 
+}

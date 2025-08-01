@@ -1,49 +1,49 @@
-"use client";
+'use client'
 
-import { useState, useEffect } from "react";
-import { useRouter, useSearchParams } from "next/navigation";
-import Link from "next/link";
-import { useAuth } from "@/contexts/AuthContext";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Card } from "@/components/ui/card";
+import { useState, useEffect } from 'react'
+import { useRouter, useSearchParams } from 'next/navigation'
+import Link from 'next/link'
+import { useAuth } from '@/contexts/AuthContext'
+import { Button } from '@/components/ui/button'
+import { Input } from '@/components/ui/input'
+import { Label } from '@/components/ui/label'
+import { Card } from '@/components/ui/card'
 
 export default function LoginForm() {
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState("");
-  const [verificationMessage, setVerificationMessage] = useState("");
+  const [email, setEmail] = useState('')
+  const [password, setPassword] = useState('')
+  const [loading, setLoading] = useState(false)
+  const [error, setError] = useState('')
+  const [verificationMessage, setVerificationMessage] = useState('')
 
-  const { signIn } = useAuth();
-  const router = useRouter();
-  const searchParams = useSearchParams();
+  const { signIn } = useAuth()
+  const router = useRouter()
+  const searchParams = useSearchParams()
 
   useEffect(() => {
     if (searchParams.get('verified') === 'true') {
-      setVerificationMessage("Email verified successfully! You can now log in.");
+      setVerificationMessage('Email verified successfully! You can now log in.')
     }
-  }, [searchParams]);
+  }, [searchParams])
 
   const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setLoading(true);
-    setError("");
+    e.preventDefault()
+    setLoading(true)
+    setError('')
 
     try {
-      const { error } = await signIn(email, password);
+      const { error } = await signIn(email, password)
       if (error) {
-        setError(error.message);
+        setError(error.message)
       } else {
-        router.push("/dashboard");
+        router.push('/dashboard')
       }
-    } catch (err) {
-      setError("An unexpected error occurred");
+    } catch {
+      setError('An unexpected error occurred')
     } finally {
-      setLoading(false);
+      setLoading(false)
     }
-  };
+  }
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-blue-50 to-white dark:from-gray-900 dark:to-gray-800 flex items-center justify-center p-4">
@@ -83,14 +83,26 @@ export default function LoginForm() {
             {verificationMessage && (
               <div className="p-4 bg-green-50 border border-green-200 rounded-lg">
                 <div className="flex items-center">
-                  <svg className="w-5 h-5 text-green-500 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                  <svg
+                    className="w-5 h-5 text-green-500 mr-2"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M5 13l4 4L19 7"
+                    />
                   </svg>
-                  <p className="text-green-700 text-sm">{verificationMessage}</p>
+                  <p className="text-green-700 text-sm">
+                    {verificationMessage}
+                  </p>
                 </div>
               </div>
             )}
-            
+
             {error && (
               <div className="bg-red-50 dark:bg-red-900/50 border border-red-200 dark:border-red-800 text-red-600 dark:text-red-400 px-4 py-3 rounded-lg text-sm flex items-center gap-2">
                 <svg
@@ -121,7 +133,7 @@ export default function LoginForm() {
                   type="email"
                   placeholder="Enter your email"
                   value={email}
-                  onChange={(e) => setEmail(e.target.value)}
+                  onChange={e => setEmail(e.target.value)}
                   required
                   className="mt-1"
                   autoComplete="email"
@@ -148,7 +160,7 @@ export default function LoginForm() {
                   type="password"
                   placeholder="Enter your password"
                   value={password}
-                  onChange={(e) => setPassword(e.target.value)}
+                  onChange={e => setPassword(e.target.value)}
                   required
                   className="mt-1"
                   autoComplete="current-password"
@@ -185,7 +197,7 @@ export default function LoginForm() {
                   Signing in...
                 </div>
               ) : (
-                "Sign in"
+                'Sign in'
               )}
             </Button>
           </form>
@@ -193,7 +205,7 @@ export default function LoginForm() {
 
         <div className="text-center">
           <p className="text-sm text-gray-600 dark:text-gray-400">
-            Don&apos;t have an account?{" "}
+            Don&apos;t have an account?{' '}
             <Link
               href="/signup"
               className="font-semibold text-blue-600 hover:text-blue-500 dark:text-blue-400 dark:hover:text-blue-300"
@@ -204,5 +216,5 @@ export default function LoginForm() {
         </div>
       </div>
     </div>
-  );
+  )
 }

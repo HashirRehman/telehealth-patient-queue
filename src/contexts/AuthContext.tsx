@@ -9,7 +9,11 @@ interface AuthContextType {
   session: Session | null
   loading: boolean
   signIn: (email: string, password: string) => Promise<{ error: Error | null }>
-  signUp: (email: string, password: string, fullName: string) => Promise<{ error: Error | null }>
+  signUp: (
+    email: string,
+    password: string,
+    fullName: string
+  ) => Promise<{ error: Error | null }>
   signOut: () => Promise<{ error: Error | null }>
   resetPassword: (email: string) => Promise<{ error: Error | null }>
 }
@@ -22,13 +26,13 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
-    const { data: { subscription } } = supabase.auth.onAuthStateChange(
-      async (event, session) => {
-        setSession(session)
-        setUser(session?.user ?? null)
-        setLoading(false)
-      }
-    )
+    const {
+      data: { subscription },
+    } = supabase.auth.onAuthStateChange(async (event, session) => {
+      setSession(session)
+      setUser(session?.user ?? null)
+      setLoading(false)
+    })
 
     return () => subscription.unsubscribe()
   }, [])
@@ -40,7 +44,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         password,
       })
       return { error: error ? new Error(error.message) : null }
-    } catch (error) {
+    } catch {
       return { error: new Error('An unexpected error occurred') }
     }
   }
@@ -58,7 +62,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         },
       })
       return { error: error ? new Error(error.message) : null }
-    } catch (error) {
+    } catch {
       return { error: new Error('An unexpected error occurred') }
     }
   }
@@ -67,7 +71,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     try {
       const { error } = await supabase.auth.signOut()
       return { error: error ? new Error(error.message) : null }
-    } catch (error) {
+    } catch {
       return { error: new Error('An unexpected error occurred') }
     }
   }
@@ -78,7 +82,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         redirectTo: `${window.location.origin}/reset-password`,
       })
       return { error: error ? new Error(error.message) : null }
-    } catch (error) {
+    } catch {
       return { error: new Error('An unexpected error occurred') }
     }
   }
@@ -102,4 +106,4 @@ export function useAuth() {
     throw new Error('useAuth must be used within an AuthProvider')
   }
   return context
-} 
+}

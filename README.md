@@ -1,8 +1,17 @@
+# Telehealth Patient Queue Management System
+
+A comprehensive telehealth platform built with Next.js, featuring real-time patient queue management, video consultations, and role-based access control for healthcare providers.
+
 ## Features
 
 - 🔐 **Authentication**: Secure login and signup with Supabase Auth
-- 👥 **User Management**: Role-based access control
-- 🏥 **Dashboard**: Overview of hospital operations
+- 👥 **Role-based Access**: Admin, Provider, and Patient roles
+- 🏥 **Telehealth Queue Management**: Real-time patient queue with status tracking
+- 📋 **Patient Management**: Comprehensive patient profiles and booking history
+- 📅 **Appointment Booking**: Online and pre-booked appointment scheduling
+- 🎥 **Video Call Integration**: Built-in video consultation interface
+- ⏰ **Waiting Room**: Patient waiting room with real-time updates
+- 📊 **Admin Dashboard**: Provider management and queue overview
 - 📱 **Responsive Design**: Modern UI with shadcn/ui components
 - 🔒 **Protected Routes**: Secure access to sensitive pages
 
@@ -232,29 +241,80 @@ The Prisma schema (`prisma/schema.prisma`) creates:
 
 ```
 src/
-├── app/                    # Next.js app router
-│   ├── dashboard/         # Protected dashboard page
-│   ├── login/            # Login page
-│   ├── signup/           # Signup page
-│   ├── layout.tsx        # Root layout with AuthProvider
-│   └── page.tsx          # Home page
+├── app/                          # Next.js app router
+│   ├── admin/                   # Admin dashboard page
+│   ├── auth/callback/           # Auth callback handler
+│   ├── dashboard/               # Protected dashboard page
+│   ├── forgot-password/         # Password reset page
+│   ├── login/                   # Login page
+│   ├── patient-portal/          # Patient portal dashboard
+│   ├── reset-password/          # Password reset form
+│   ├── signup/                  # User registration page
+│   ├── telehealth-queue/        # Main queue management interface
+│   ├── video-call/[bookingId]/  # Video consultation room
+│   ├── waiting-room/[bookingId]/ # Patient waiting room
+│   ├── layout.tsx               # Root layout with providers
+│   └── page.tsx                 # Home page
 ├── components/
-│   ├── auth/             # Authentication components
-│   └── ui/               # shadcn/ui components
+│   ├── admin/                   # Admin-specific components
+│   │   ├── BookingCard.tsx
+│   │   ├── CreateBookingForm.tsx
+│   │   └── EnhancedCreateBookingForm.tsx
+│   ├── auth/                    # Authentication components
+│   │   ├── LoginForm.tsx
+│   │   └── SignupForm.tsx
+│   ├── common/                  # Shared components
+│   │   ├── ConfirmDialog.tsx
+│   │   ├── EmptyState.tsx
+│   │   ├── LoadingSpinner.tsx
+│   │   └── StatusBadge.tsx
+│   ├── patient/                 # Patient-specific components
+│   │   ├── PatientDetailsModal.tsx
+│   │   └── PatientTelehealthCard.tsx
+│   ├── telehealth/              # Telehealth queue components
+│   │   ├── NotificationSystem.tsx
+│   │   ├── QueueStatusBadge.tsx
+│   │   └── QueueStatusFlow.tsx
+│   └── ui/                      # shadcn/ui components
 ├── contexts/
-│   └── AuthContext.tsx   # Authentication context
+│   ├── AuthContext.tsx          # Authentication context
+│   └── DataContext.tsx          # Data management context
+├── hooks/                       # Custom React hooks
+│   ├── useBookings.ts
+│   ├── useOptimizedBookings.ts
+│   ├── usePatients.ts
+│   └── useRealtimeQueue.ts
 └── lib/
-    ├── supabase.ts       # Supabase client configuration
-    └── utils.ts          # Utility functions
+    ├── constants/               # App constants
+    │   └── status.ts
+    ├── utils/                   # Utility functions
+    │   ├── booking.ts
+    │   ├── date.ts
+    │   └── index.ts
+    ├── bookings.ts              # Booking service
+    ├── database.types.ts        # TypeScript types
+    ├── prisma.ts                # Prisma client
+    ├── queue.ts                 # Queue management
+    ├── supabase.ts              # Supabase client
+    └── utils.ts                 # General utilities
 ```
 
-## Authentication Flow
+## Application Flow
 
+### Authentication Flow
 1. **Sign Up**: Users can create an account with email/password
 2. **Email Verification**: Supabase sends verification email
 3. **Sign In**: Users can log in with verified credentials
-4. **Protected Routes**: Dashboard requires authentication
+4. **Role-based Routing**: Different dashboards based on user role (Admin/Provider/Patient)
 5. **Sign Out**: Users can securely log out
+
+### Telehealth Queue Flow
+1. **Booking Creation**: Patients book appointments online or providers create bookings
+2. **Queue Management**: Real-time queue with status tracking (pending → confirmed → intake → ready for provider → provider → discharge → completed)
+3. **Patient Check-in**: Patients can check into the waiting room
+4. **Provider Workflow**: Providers can move patients through different statuses
+5. **Video Consultation**: Integrated video call interface for telehealth appointments
+6. **Appointment Completion**: Final status updates and discharge process
 
 ## Available Scripts
 

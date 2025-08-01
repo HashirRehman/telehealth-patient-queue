@@ -11,4 +11,4 @@ function LoginFormWithSuspense() {
 
 export default function LoginPage() {
   return <LoginFormWithSuspense />
-} 
+}

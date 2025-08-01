@@ -16,7 +16,6 @@ import {
   VideoIcon,
   AlertCircleIcon,
   CheckCircleIcon,
-  BuildingIcon
 } from 'lucide-react'
 import { getStatusConfig } from '@/lib/constants/status'
 
@@ -26,10 +25,10 @@ interface PatientTelehealthCardProps {
   isPatientView?: boolean
 }
 
-const PatientTelehealthCard = memo(function PatientTelehealthCard({ 
-  booking, 
-  showActions = true, 
-  isPatientView = false 
+const PatientTelehealthCard = memo(function PatientTelehealthCard({
+  booking,
+  showActions = true,
+  isPatientView = false,
 }: PatientTelehealthCardProps) {
   const router = useRouter()
 
@@ -43,13 +42,13 @@ const PatientTelehealthCard = memo(function PatientTelehealthCard({
       online: {
         label: 'Telehealth',
         icon: '📱',
-        color: 'bg-emerald-50 text-emerald-700 border-emerald-200'
+        color: 'bg-emerald-50 text-emerald-700 border-emerald-200',
       },
       'pre-booked': {
         label: 'In-Person',
         icon: '🏥',
-        color: 'bg-blue-50 text-blue-700 border-blue-200'
-      }
+        color: 'bg-blue-50 text-blue-700 border-blue-200',
+      },
     }
     return configs[type as keyof typeof configs] || configs.online
   }
@@ -58,10 +57,12 @@ const PatientTelehealthCard = memo(function PatientTelehealthCard({
     if (booking.is_adhoc) {
       return 'Adhoc'
     }
-    const time = new Date(`1970-01-01T${booking.appointment_time}`).toLocaleTimeString('en-US', {
+    const time = new Date(
+      `1970-01-01T${booking.appointment_time}`
+    ).toLocaleTimeString('en-US', {
       hour: 'numeric',
       minute: '2-digit',
-      hour12: true
+      hour12: true,
     })
     return `Booked ${time}`
   }
@@ -70,7 +71,7 @@ const PatientTelehealthCard = memo(function PatientTelehealthCard({
     return new Date(date).toLocaleDateString('en-US', {
       month: 'short',
       day: 'numeric',
-      year: 'numeric'
+      year: 'numeric',
     })
   }
 
@@ -78,18 +79,25 @@ const PatientTelehealthCard = memo(function PatientTelehealthCard({
     return new Date(`1970-01-01T${time}`).toLocaleTimeString('en-US', {
       hour: 'numeric',
       minute: '2-digit',
-      hour12: true
+      hour12: true,
     })
   }
 
   const calculateWaitTime = (booking: BookingWithPatient) => {
     const now = new Date()
-    const appointmentTime = new Date(`${booking.appointment_date}T${booking.appointment_time}`)
+    const appointmentTime = new Date(
+      `${booking.appointment_date}T${booking.appointment_time}`
+    )
     const createdTime = new Date(booking.created_at)
-    
-    const currentWait = Math.max(0, Math.floor((now.getTime() - appointmentTime.getTime()) / (1000 * 60)))
-    const totalWait = Math.floor((now.getTime() - createdTime.getTime()) / (1000 * 60))
-    
+
+    const currentWait = Math.max(
+      0,
+      Math.floor((now.getTime() - appointmentTime.getTime()) / (1000 * 60))
+    )
+    const totalWait = Math.floor(
+      (now.getTime() - createdTime.getTime()) / (1000 * 60)
+    )
+
     return { currentWait, totalWait }
   }
 
@@ -100,7 +108,7 @@ const PatientTelehealthCard = memo(function PatientTelehealthCard({
     switch (booking.status) {
       case 'confirmed':
         return (
-          <Button 
+          <Button
             size="sm"
             onClick={() => router.push(`/waiting-room/${booking.id}`)}
           >
@@ -109,7 +117,7 @@ const PatientTelehealthCard = memo(function PatientTelehealthCard({
         )
       case 'intake':
         return (
-          <Button 
+          <Button
             size="sm"
             onClick={() => router.push(`/waiting-room/${booking.id}`)}
             className="bg-purple-600 hover:bg-purple-700"
@@ -124,12 +132,14 @@ const PatientTelehealthCard = memo(function PatientTelehealthCard({
               <CheckCircleIcon className="w-4 h-4 mr-1" />
               Ready for Provider
             </div>
-            <div className="text-gray-500 mt-1">Your provider will start the call shortly</div>
+            <div className="text-gray-500 mt-1">
+              Your provider will start the call shortly
+            </div>
           </div>
         )
       case 'provider':
         return (
-          <Button 
+          <Button
             size="sm"
             onClick={() => router.push(`/video-call/${booking.id}`)}
             className="bg-green-600 hover:bg-green-700"
@@ -144,11 +154,13 @@ const PatientTelehealthCard = memo(function PatientTelehealthCard({
   }
 
   const getProviderAction = () => {
-    const canJoinCall = ['ready-for-provider', 'provider'].includes(booking.status)
+    const canJoinCall = ['ready-for-provider', 'provider'].includes(
+      booking.status
+    )
     if (canJoinCall) {
       return (
-        <Button 
-          size="sm" 
+        <Button
+          size="sm"
           onClick={() => router.push(`/video-call/${booking.id}`)}
           className="bg-green-600 hover:bg-green-700"
         >
@@ -170,37 +182,44 @@ const PatientTelehealthCard = memo(function PatientTelehealthCard({
             <div className="w-12 h-12 bg-gradient-to-br from-blue-500 to-blue-600 rounded-full flex items-center justify-center shadow-md flex-shrink-0">
               <UserIcon className="w-6 h-6 text-white" />
             </div>
-            
+
             {/* Patient Details */}
             <div className="flex-1 min-w-0">
               <div className="flex items-center gap-2 mb-2">
                 <h3 className="text-lg font-semibold text-gray-900 truncate">
                   {booking.patient.full_name}
                 </h3>
-                <Badge className={`${statusConfig.color} px-2 py-1 text-xs font-medium shadow-sm`}>
+                <Badge
+                  className={`${statusConfig.color} px-2 py-1 text-xs font-medium shadow-sm`}
+                >
                   <StatusIcon className="w-3 h-3 mr-1" />
                   {statusConfig.label}
                 </Badge>
               </div>
-              
+
               {/* Contact Info */}
               <div className="space-y-1 text-sm text-gray-600">
                 <div className="flex items-center">
                   <MailIcon className="w-3 h-3 mr-2 text-gray-400 flex-shrink-0" />
                   <span className="truncate">{booking.patient.email}</span>
                 </div>
-                
+
                 {booking.patient.phone && (
                   <div className="flex items-center">
                     <PhoneIcon className="w-3 h-3 mr-2 text-gray-400 flex-shrink-0" />
                     <span>{booking.patient.phone}</span>
                   </div>
                 )}
-                
+
                 {booking.patient.date_of_birth && (
                   <div className="flex items-center">
                     <CalendarIcon className="w-3 h-3 mr-2 text-gray-400 flex-shrink-0" />
-                    <span>DOB: {new Date(booking.patient.date_of_birth).toLocaleDateString()}</span>
+                    <span>
+                      DOB:{' '}
+                      {new Date(
+                        booking.patient.date_of_birth
+                      ).toLocaleDateString()}
+                    </span>
                   </div>
                 )}
               </div>
@@ -221,15 +240,19 @@ const PatientTelehealthCard = memo(function PatientTelehealthCard({
               <CalendarIcon className="w-4 h-4 mr-2 text-gray-400" />
               <div>
                 <p className="text-xs text-gray-500">Date</p>
-                <p className="font-medium">{formatDate(booking.appointment_date)}</p>
+                <p className="font-medium">
+                  {formatDate(booking.appointment_date)}
+                </p>
               </div>
             </div>
-            
+
             <div className="flex items-center">
               <ClockIcon className="w-4 h-4 mr-2 text-gray-400" />
               <div>
                 <p className="text-xs text-gray-500">Time</p>
-                <p className="font-medium">{formatTime(booking.appointment_time)}</p>
+                <p className="font-medium">
+                  {formatTime(booking.appointment_time)}
+                </p>
               </div>
             </div>
 
@@ -246,7 +269,9 @@ const PatientTelehealthCard = memo(function PatientTelehealthCard({
                 <AlertCircleIcon className="w-4 h-4 mr-2 text-orange-400" />
                 <div>
                   <p className="text-xs text-gray-500">Wait Time</p>
-                  <p className="font-medium text-orange-600">{waitTimes.currentWait}m</p>
+                  <p className="font-medium text-orange-600">
+                    {waitTimes.currentWait}m
+                  </p>
                 </div>
               </div>
             )}
@@ -262,17 +287,21 @@ const PatientTelehealthCard = memo(function PatientTelehealthCard({
                   <UserIcon className="w-4 h-4 mr-2 text-blue-500" />
                   <div>
                     <p className="text-xs text-gray-500">Provider</p>
-                    <p className="font-medium text-blue-700">{booking.provider_name}</p>
+                    <p className="font-medium text-blue-700">
+                      {booking.provider_name}
+                    </p>
                   </div>
                 </div>
               )}
-              
+
               {booking.chief_complaint && (
                 <div className="flex items-start">
                   <FileTextIcon className="w-4 h-4 mr-2 text-blue-500 mt-0.5 flex-shrink-0" />
                   <div>
                     <p className="text-xs text-gray-500">Chief Complaint</p>
-                    <p className="font-medium text-blue-700 leading-relaxed">{booking.chief_complaint}</p>
+                    <p className="font-medium text-blue-700 leading-relaxed">
+                      {booking.chief_complaint}
+                    </p>
                   </div>
                 </div>
               )}
@@ -282,7 +311,9 @@ const PatientTelehealthCard = memo(function PatientTelehealthCard({
                   <MapPinIcon className="w-4 h-4 mr-2 text-blue-500" />
                   <div>
                     <p className="text-xs text-gray-500">Location</p>
-                    <p className="font-medium text-blue-700">{booking.room_location}</p>
+                    <p className="font-medium text-blue-700">
+                      {booking.room_location}
+                    </p>
                   </div>
                 </div>
               )}
@@ -297,7 +328,9 @@ const PatientTelehealthCard = memo(function PatientTelehealthCard({
               <FileTextIcon className="w-4 h-4 mr-2 text-yellow-600 mt-0.5 flex-shrink-0" />
               <div>
                 <p className="text-xs text-gray-500 mb-1">Notes</p>
-                <p className="text-sm text-gray-700 leading-relaxed">{booking.notes}</p>
+                <p className="text-sm text-gray-700 leading-relaxed">
+                  {booking.notes}
+                </p>
               </div>
             </div>
           </div>
@@ -307,12 +340,24 @@ const PatientTelehealthCard = memo(function PatientTelehealthCard({
         {showActions && (
           <div className="flex items-center justify-between pt-3 border-t border-gray-200">
             {/* Wait Time Info */}
-            {['confirmed', 'intake', 'ready-for-provider', 'provider'].includes(booking.status) && (
+            {['confirmed', 'intake', 'ready-for-provider', 'provider'].includes(
+              booking.status
+            ) && (
               <div className="text-xs text-gray-500">
-                {booking.status === 'provider' && <span className="text-green-600 font-medium">● Live</span>}
-                {booking.status === 'ready-for-provider' && <span className="text-orange-600 font-medium">● Ready</span>}
-                {booking.status === 'intake' && <span className="text-purple-600 font-medium">● In Progress</span>}
-                {booking.status === 'confirmed' && <span className="text-blue-600 font-medium">● Confirmed</span>}
+                {booking.status === 'provider' && (
+                  <span className="text-green-600 font-medium">● Live</span>
+                )}
+                {booking.status === 'ready-for-provider' && (
+                  <span className="text-orange-600 font-medium">● Ready</span>
+                )}
+                {booking.status === 'intake' && (
+                  <span className="text-purple-600 font-medium">
+                    ● In Progress
+                  </span>
+                )}
+                {booking.status === 'confirmed' && (
+                  <span className="text-blue-600 font-medium">● Confirmed</span>
+                )}
               </div>
             )}
 
@@ -327,4 +372,4 @@ const PatientTelehealthCard = memo(function PatientTelehealthCard({
   )
 })
 
-export { PatientTelehealthCard } 
+export { PatientTelehealthCard }

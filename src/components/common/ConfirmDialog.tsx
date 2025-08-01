@@ -33,7 +33,7 @@ export function ConfirmDialog({
   confirmText = 'Confirm',
   cancelText = 'Cancel',
   variant = 'default',
-  isLoading = false
+  isLoading = false,
 }: ConfirmDialogProps) {
   const handleConfirm = async () => {
     try {
@@ -66,11 +66,7 @@ export function ConfirmDialog({
           </div>
         </DialogHeader>
         <DialogFooter className="gap-2 sm:gap-0">
-          <Button
-            variant="outline"
-            onClick={onClose}
-            disabled={isLoading}
-          >
+          <Button variant="outline" onClick={onClose} disabled={isLoading}>
             {cancelText}
           </Button>
           <Button
@@ -91,4 +87,4 @@ export function ConfirmDialog({
       </DialogContent>
     </Dialog>
   )
-} 
+}

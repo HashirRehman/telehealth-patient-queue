@@ -14,14 +14,14 @@ interface EmptyStateProps {
 const iconMap = {
   files: FileX,
   users: Users,
-  calendar: Calendar
+  calendar: Calendar,
 }
 
-const EmptyState = memo(function EmptyState({ 
-  title, 
+const EmptyState = memo(function EmptyState({
+  title,
   description,
   icon = 'files',
-  className = ''
+  className = '',
 }: EmptyStateProps) {
   const IconComponent = iconMap[icon]
 
@@ -38,4 +38,4 @@ const EmptyState = memo(function EmptyState({
   )
 })
 
-export { EmptyState } 
+export { EmptyState }

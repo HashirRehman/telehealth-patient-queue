@@ -59,7 +59,15 @@ export type Database = {
           appointment_date: string
           appointment_time: string
           booking_type: 'pre-booked' | 'online'
-          status: 'pending' | 'confirmed' | 'intake' | 'ready-for-provider' | 'provider' | 'ready-for-discharge' | 'discharged' | 'cancelled'
+          status:
+            | 'pending'
+            | 'confirmed'
+            | 'intake'
+            | 'ready-for-provider'
+            | 'provider'
+            | 'ready-for-discharge'
+            | 'discharged'
+            | 'cancelled'
           notes: string | null
           created_by: string
           provider_name: string | null
@@ -75,7 +83,15 @@ export type Database = {
           appointment_date: string
           appointment_time: string
           booking_type?: 'pre-booked' | 'online'
-          status?: 'pending' | 'confirmed' | 'intake' | 'ready-for-provider' | 'provider' | 'ready-for-discharge' | 'discharged' | 'cancelled'
+          status?:
+            | 'pending'
+            | 'confirmed'
+            | 'intake'
+            | 'ready-for-provider'
+            | 'provider'
+            | 'ready-for-discharge'
+            | 'discharged'
+            | 'cancelled'
           notes?: string | null
           created_by: string
           provider_name?: string | null
@@ -91,7 +107,15 @@ export type Database = {
           appointment_date?: string
           appointment_time?: string
           booking_type?: 'pre-booked' | 'online'
-          status?: 'pending' | 'confirmed' | 'intake' | 'ready-for-provider' | 'provider' | 'ready-for-discharge' | 'discharged' | 'cancelled'
+          status?:
+            | 'pending'
+            | 'confirmed'
+            | 'intake'
+            | 'ready-for-provider'
+            | 'provider'
+            | 'ready-for-discharge'
+            | 'discharged'
+            | 'cancelled'
           notes?: string | null
           created_by?: string
           provider_name?: string | null
@@ -109,7 +133,15 @@ export type Database = {
     }
     Enums: {
       booking_type: 'pre-booked' | 'online'
-      booking_status: 'pending' | 'confirmed' | 'intake' | 'ready-for-provider' | 'provider' | 'ready-for-discharge' | 'discharged' | 'cancelled'
+      booking_status:
+        | 'pending'
+        | 'confirmed'
+        | 'intake'
+        | 'ready-for-provider'
+        | 'provider'
+        | 'ready-for-discharge'
+        | 'discharged'
+        | 'cancelled'
     }
   }
 }
@@ -132,7 +164,15 @@ export type PatientWithBookings = Patient & {
 }
 
 // Telehealth Queue specific types
-export type TelehealthStatus = 'pending' | 'confirmed' | 'intake' | 'ready-for-provider' | 'provider' | 'ready-for-discharge' | 'discharged' | 'cancelled'
+export type TelehealthStatus =
+  | 'pending'
+  | 'confirmed'
+  | 'intake'
+  | 'ready-for-provider'
+  | 'provider'
+  | 'ready-for-discharge'
+  | 'discharged'
+  | 'cancelled'
 
 export type QueueTab = 'pre-booked' | 'in-office' | 'completed'
 
@@ -140,4 +180,4 @@ export type QueueFilters = {
   statuses: TelehealthStatus[]
   providerName: string | null
   patientNameSearch: string
-} 
+}

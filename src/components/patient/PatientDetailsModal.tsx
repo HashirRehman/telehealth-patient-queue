@@ -1,12 +1,12 @@
 'use client'
 
 import { useState } from 'react'
-import { 
-  Dialog, 
-  DialogContent, 
-  DialogDescription, 
-  DialogHeader, 
-  DialogTitle 
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
 } from '@/components/ui/dialog'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
@@ -27,7 +27,7 @@ import {
   CheckCircleIcon,
   XCircleIcon,
   EditIcon,
-  SaveIcon
+  SaveIcon,
 } from 'lucide-react'
 
 interface PatientDetailsModalProps {
@@ -38,53 +38,53 @@ interface PatientDetailsModalProps {
 }
 
 const statusConfig = {
-  'pending': { 
-    color: 'bg-amber-50 text-amber-700 border-amber-200', 
+  pending: {
+    color: 'bg-amber-50 text-amber-700 border-amber-200',
     icon: AlertCircleIcon,
-    label: 'Pending Confirmation'
+    label: 'Pending Confirmation',
   },
-  'confirmed': { 
-    color: 'bg-blue-50 text-blue-700 border-blue-200', 
+  confirmed: {
+    color: 'bg-blue-50 text-blue-700 border-blue-200',
     icon: CheckCircleIcon,
-    label: 'Confirmed'
+    label: 'Confirmed',
   },
-  'intake': { 
-    color: 'bg-purple-50 text-purple-700 border-purple-200', 
+  intake: {
+    color: 'bg-purple-50 text-purple-700 border-purple-200',
     icon: ClipboardIcon,
-    label: 'In Intake'
+    label: 'In Intake',
   },
-  'ready-for-provider': { 
-    color: 'bg-green-50 text-green-700 border-green-200', 
+  'ready-for-provider': {
+    color: 'bg-green-50 text-green-700 border-green-200',
     icon: CheckCircleIcon,
-    label: 'Ready for Provider'
+    label: 'Ready for Provider',
   },
-  'provider': { 
-    color: 'bg-orange-50 text-orange-700 border-orange-200', 
+  provider: {
+    color: 'bg-orange-50 text-orange-700 border-orange-200',
     icon: VideoIcon,
-    label: 'With Provider'
+    label: 'With Provider',
   },
-  'ready-for-discharge': { 
-    color: 'bg-indigo-50 text-indigo-700 border-indigo-200', 
+  'ready-for-discharge': {
+    color: 'bg-indigo-50 text-indigo-700 border-indigo-200',
     icon: CheckCircleIcon,
-    label: 'Ready for Discharge'
+    label: 'Ready for Discharge',
   },
-  'discharged': { 
-    color: 'bg-gray-50 text-gray-700 border-gray-200', 
+  discharged: {
+    color: 'bg-gray-50 text-gray-700 border-gray-200',
     icon: CheckCircleIcon,
-    label: 'Discharged'
+    label: 'Discharged',
   },
-  'cancelled': { 
-    color: 'bg-red-50 text-red-700 border-red-200', 
+  cancelled: {
+    color: 'bg-red-50 text-red-700 border-red-200',
     icon: XCircleIcon,
-    label: 'Cancelled'
-  }
+    label: 'Cancelled',
+  },
 }
 
-export function PatientDetailsModal({ 
-  isOpen, 
-  onClose, 
-  booking, 
-  onUpdateNotes 
+export function PatientDetailsModal({
+  isOpen,
+  onClose,
+  booking,
+  onUpdateNotes,
 }: PatientDetailsModalProps) {
   const [isEditingNotes, setIsEditingNotes] = useState(false)
   const [notes, setNotes] = useState('')
@@ -100,7 +100,7 @@ export function PatientDetailsModal({
       weekday: 'long',
       year: 'numeric',
       month: 'long',
-      day: 'numeric'
+      day: 'numeric',
     })
   }
 
@@ -108,7 +108,7 @@ export function PatientDetailsModal({
     return new Date(`1970-01-01T${time}`).toLocaleTimeString('en-US', {
       hour: 'numeric',
       minute: '2-digit',
-      hour12: true
+      hour12: true,
     })
   }
 
@@ -117,23 +117,30 @@ export function PatientDetailsModal({
     const birthDate = new Date(dateOfBirth)
     let age = today.getFullYear() - birthDate.getFullYear()
     const monthDiff = today.getMonth() - birthDate.getMonth()
-    
-    if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birthDate.getDate())) {
+
+    if (
+      monthDiff < 0 ||
+      (monthDiff === 0 && today.getDate() < birthDate.getDate())
+    ) {
       age--
     }
-    
+
     return age
   }
 
   const calculateWaitTime = () => {
     const now = new Date()
-    const appointmentTime = new Date(`${booking.appointment_date}T${booking.appointment_time}`)
-    const diffInMinutes = Math.floor((now.getTime() - appointmentTime.getTime()) / (1000 * 60))
-    
+    const appointmentTime = new Date(
+      `${booking.appointment_date}T${booking.appointment_time}`
+    )
+    const diffInMinutes = Math.floor(
+      (now.getTime() - appointmentTime.getTime()) / (1000 * 60)
+    )
+
     if (diffInMinutes < 0) return 'Appointment upcoming'
     if (diffInMinutes === 0) return 'Just started'
     if (diffInMinutes < 60) return `${diffInMinutes} minutes`
-    
+
     const hours = Math.floor(diffInMinutes / 60)
     const minutes = diffInMinutes % 60
     return `${hours}h ${minutes}m`
@@ -146,7 +153,7 @@ export function PatientDetailsModal({
 
   const handleSaveNotes = async () => {
     if (!onUpdateNotes) return
-    
+
     setIsSavingNotes(true)
     try {
       await onUpdateNotes(booking.id, notes)
@@ -181,8 +188,10 @@ export function PatientDetailsModal({
                 </DialogDescription>
               </div>
             </div>
-            
-            <Badge className={`${statusStyle.color} px-4 py-2 font-medium text-sm shadow-sm`}>
+
+            <Badge
+              className={`${statusStyle.color} px-4 py-2 font-medium text-sm shadow-sm`}
+            >
               <StatusIcon className="w-4 h-4 mr-2" />
               {statusStyle.label}
             </Badge>
@@ -204,11 +213,13 @@ export function PatientDetailsModal({
                   <p className="text-sm text-gray-500">Full Name</p>
                   <p className="font-semibold">{booking.patient.full_name}</p>
                 </div>
-                
+
                 {booking.patient.date_of_birth && (
                   <div>
                     <p className="text-sm text-gray-500">Age</p>
-                    <p className="font-semibold">{calculateAge(booking.patient.date_of_birth)} years old</p>
+                    <p className="font-semibold">
+                      {calculateAge(booking.patient.date_of_birth)} years old
+                    </p>
                   </div>
                 )}
               </div>
@@ -237,7 +248,11 @@ export function PatientDetailsModal({
                     <CalendarIcon className="w-4 h-4 mr-3 text-gray-400" />
                     <div>
                       <p className="text-sm text-gray-500">Date of Birth</p>
-                      <p className="font-medium">{new Date(booking.patient.date_of_birth).toLocaleDateString()}</p>
+                      <p className="font-medium">
+                        {new Date(
+                          booking.patient.date_of_birth
+                        ).toLocaleDateString()}
+                      </p>
                     </div>
                   </div>
                 )}
@@ -267,12 +282,16 @@ export function PatientDetailsModal({
               <div className="grid grid-cols-2 gap-4">
                 <div>
                   <p className="text-sm text-gray-500">Date</p>
-                  <p className="font-semibold">{formatDate(booking.appointment_date)}</p>
+                  <p className="font-semibold">
+                    {formatDate(booking.appointment_date)}
+                  </p>
                 </div>
-                
+
                 <div>
                   <p className="text-sm text-gray-500">Time</p>
-                  <p className="font-semibold">{formatTime(booking.appointment_time)}</p>
+                  <p className="font-semibold">
+                    {formatTime(booking.appointment_time)}
+                  </p>
                 </div>
               </div>
 
@@ -293,10 +312,12 @@ export function PatientDetailsModal({
                     )}
                   </div>
                 </div>
-                
+
                 <div>
                   <p className="text-sm text-gray-500">Wait Time</p>
-                  <p className="font-semibold text-orange-600">{calculateWaitTime()}</p>
+                  <p className="font-semibold text-orange-600">
+                    {calculateWaitTime()}
+                  </p>
                 </div>
               </div>
 
@@ -310,7 +331,9 @@ export function PatientDetailsModal({
               {booking.chief_complaint && (
                 <div>
                   <p className="text-sm text-gray-500">Chief Complaint</p>
-                  <p className="font-medium text-gray-700">{booking.chief_complaint}</p>
+                  <p className="font-medium text-gray-700">
+                    {booking.chief_complaint}
+                  </p>
                 </div>
               )}
 
@@ -331,13 +354,9 @@ export function PatientDetailsModal({
                   <FileTextIcon className="w-5 h-5 mr-2 text-purple-500" />
                   Notes & Medical History
                 </CardTitle>
-                
+
                 {!isEditingNotes && (
-                  <Button 
-                    onClick={handleEditNotes}
-                    variant="outline" 
-                    size="sm"
-                  >
+                  <Button onClick={handleEditNotes} variant="outline" size="sm">
                     <EditIcon className="w-4 h-4 mr-1" />
                     Edit Notes
                   </Button>
@@ -349,13 +368,13 @@ export function PatientDetailsModal({
                 <div className="space-y-4">
                   <Textarea
                     value={notes}
-                    onChange={(e) => setNotes(e.target.value)}
+                    onChange={e => setNotes(e.target.value)}
                     placeholder="Add notes about the patient's condition, treatment, or observations..."
                     rows={6}
                     className="w-full"
                   />
                   <div className="flex gap-2">
-                    <Button 
+                    <Button
                       onClick={handleSaveNotes}
                       disabled={isSavingNotes}
                       size="sm"
@@ -363,7 +382,7 @@ export function PatientDetailsModal({
                       <SaveIcon className="w-4 h-4 mr-1" />
                       {isSavingNotes ? 'Saving...' : 'Save Notes'}
                     </Button>
-                    <Button 
+                    <Button
                       onClick={handleCancelEdit}
                       variant="outline"
                       size="sm"
@@ -376,13 +395,20 @@ export function PatientDetailsModal({
                 <div className="space-y-4">
                   {booking.notes ? (
                     <div className="bg-gray-50 rounded-lg p-4">
-                      <p className="text-sm text-gray-700 whitespace-pre-wrap">{booking.notes}</p>
+                      <p className="text-sm text-gray-700 whitespace-pre-wrap">
+                        {booking.notes}
+                      </p>
                     </div>
                   ) : (
                     <div className="bg-gray-50 rounded-lg p-4 text-center">
                       <FileTextIcon className="w-8 h-8 text-gray-400 mx-auto mb-2" />
-                      <p className="text-gray-500">No notes available for this patient.</p>
-                                             <p className="text-sm text-gray-400 mt-1">Click &quot;Edit Notes&quot; to add medical notes or observations.</p>
+                      <p className="text-gray-500">
+                        No notes available for this patient.
+                      </p>
+                      <p className="text-sm text-gray-400 mt-1">
+                        Click &quot;Edit Notes&quot; to add medical notes or
+                        observations.
+                      </p>
                     </div>
                   )}
                 </div>
@@ -399,4 +425,4 @@ export function PatientDetailsModal({
       </DialogContent>
     </Dialog>
   )
-} 
+}
