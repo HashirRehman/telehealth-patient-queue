@@ -76,6 +76,9 @@ export default function AdminPanel() {
             <p className="text-gray-600 mt-1">Manage all hospital appointments and patients</p>
           </div>
           <div className="flex gap-3">
+            <Button onClick={() => router.push('/telehealth-queue')}>
+              Telehealth Queue
+            </Button>
             <Button onClick={() => setShowCreateBooking(true)}>
               Create Booking
             </Button>

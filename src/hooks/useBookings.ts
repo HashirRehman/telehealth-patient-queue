@@ -1,6 +1,6 @@
 import { useCallback } from 'react'
 import { BookingService } from '@/lib/bookings'
-import { BookingInsert, BookingWithPatient } from '@/lib/database.types'
+import { Booking, BookingInsert, BookingWithPatient } from '@/lib/database.types'
 import { useData } from '@/contexts/DataContext'
 
 export function useBookings() {
@@ -57,7 +57,7 @@ export function useBookings() {
 
   const updateBookingStatus = useCallback(async (
     bookingId: string,
-    status: 'pending' | 'confirmed' | 'waiting-room' | 'in-call' | 'completed' | 'cancelled'
+    status: Booking['status']
   ): Promise<BookingWithPatient> => {
     return updateBooking(bookingId, { status })
   }, [updateBooking])
@@ -97,13 +97,12 @@ export function useBookings() {
     const today = new Date().toISOString().split('T')[0]
     return myBookings.filter(booking => 
       booking.appointment_date >= today && 
-      booking.status !== 'completed' && 
-      booking.status !== 'cancelled'
+      !['discharged', 'cancelled'].includes(booking.status)
     )
   }, [myBookings])
 
   const getCompletedBookings = useCallback(() => {
-    return myBookings.filter(booking => booking.status === 'completed')
+    return myBookings.filter(booking => ['discharged', 'ready-for-discharge'].includes(booking.status))
   }, [myBookings])
 
   return {

@@ -1,7 +1,7 @@
 "use client";
 
-import { useState } from "react";
-import { useRouter } from "next/navigation";
+import { useState, useEffect } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { useAuth } from "@/contexts/AuthContext";
 import { Button } from "@/components/ui/button";
@@ -14,9 +14,18 @@ export default function LoginForm() {
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+  const [verificationMessage, setVerificationMessage] = useState("");
 
   const { signIn } = useAuth();
   const router = useRouter();
+  const searchParams = useSearchParams();
+
+  // Check for email verification success
+  useEffect(() => {
+    if (searchParams.get('verified') === 'true') {
+      setVerificationMessage("Email verified successfully! You can now log in.");
+    }
+  }, [searchParams]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -71,6 +80,18 @@ export default function LoginForm() {
 
         <Card className="p-6 space-y-6 bg-white/50 dark:bg-gray-800/50 backdrop-blur-xl border-t border-b border-gray-200 dark:border-gray-700 sm:rounded-xl sm:border">
           <form onSubmit={handleSubmit} className="space-y-6">
+            {/* Email Verification Success Message */}
+            {verificationMessage && (
+              <div className="p-4 bg-green-50 border border-green-200 rounded-lg">
+                <div className="flex items-center">
+                  <svg className="w-5 h-5 text-green-500 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                  </svg>
+                  <p className="text-green-700 text-sm">{verificationMessage}</p>
+                </div>
+              </div>
+            )}
+            
             {error && (
               <div className="bg-red-50 dark:bg-red-900/50 border border-red-200 dark:border-red-800 text-red-600 dark:text-red-400 px-4 py-3 rounded-lg text-sm flex items-center gap-2">
                 <svg

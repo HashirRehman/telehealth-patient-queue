@@ -7,6 +7,7 @@ import { useRouter } from 'next/navigation'
 import { useEffect, useState } from 'react'
 import { useBookings } from '@/hooks/useBookings'
 import CreateBookingForm from '@/components/admin/CreateBookingForm'
+import { PatientTelehealthCard } from '@/components/patient/PatientTelehealthCard'
 
 export default function Dashboard() {
   const { user, signOut, loading } = useAuth()
@@ -43,8 +44,12 @@ export default function Dashboard() {
     return null
   }
 
-  const upcomingCount = getUpcomingBookings().length
-  const completedCount = getCompletedBookings().length
+  const upcomingCount = myBookings.filter(b => 
+    ['confirmed', 'intake', 'ready-for-provider', 'provider'].includes(b.status)
+  ).length
+  const completedCount = myBookings.filter(b => 
+    ['ready-for-discharge', 'discharged'].includes(b.status)
+  ).length
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -61,6 +66,29 @@ export default function Dashboard() {
             </Button>
             <Button onClick={() => router.push('/admin')} variant="outline">
               Admin Panel
+            </Button>
+            <Button 
+              onClick={() => {
+                // Check for any online booking that patient can join
+                const onlineBooking = myBookings.find(b => 
+                  b.booking_type === 'online' && 
+                  ['confirmed', 'intake', 'ready-for-provider', 'provider'].includes(b.status)
+                )
+                if (onlineBooking) {
+                  // If in provider status, go directly to video call
+                  if (onlineBooking.status === 'provider') {
+                    router.push(`/video-call/${onlineBooking.id}`)
+                  } else {
+                    // Otherwise go to waiting room
+                    router.push(`/waiting-room/${onlineBooking.id}`)
+                  }
+                } else {
+                  router.push('/telehealth-queue')
+                }
+              }} 
+              variant="outline"
+            >
+              Telehealth
             </Button>
             <Button onClick={handleSignOut} variant="outline">
               Sign Out
@@ -130,52 +158,12 @@ export default function Dashboard() {
             ) : (
               <div className="space-y-4">
                 {myBookings.slice(0, 5).map((booking) => (
-                  <div key={booking.id} className="flex items-center justify-between p-4 border rounded-lg hover:bg-gray-50 transition-colors">
-                    <div className="flex-1">
-                      <div className="flex items-center gap-3">
-                        <div>
-                          <p className="font-medium">{booking.patient.full_name}</p>
-                          <p className="text-sm text-gray-500">
-                            {new Date(booking.appointment_date).toLocaleDateString('en-US', {
-                              weekday: 'short',
-                              month: 'short',
-                              day: 'numeric',
-                              year: 'numeric'
-                            })} at{' '}
-                            {new Date(`1970-01-01T${booking.appointment_time}`).toLocaleTimeString('en-US', {
-                              hour: 'numeric',
-                              minute: '2-digit',
-                              hour12: true
-                            })}
-                          </p>
-                          {booking.notes && (
-                            <p className="text-xs text-gray-400 mt-1 truncate max-w-md">
-                              {booking.notes}
-                            </p>
-                          )}
-                        </div>
-                      </div>
-                    </div>
-                    <div className="flex items-center gap-3">
-                      <span className={`px-2 py-1 rounded-full text-xs font-medium ${
-                        booking.status === 'completed' ? 'bg-green-100 text-green-800' :
-                        booking.status === 'confirmed' ? 'bg-blue-100 text-blue-800' :
-                        booking.status === 'pending' ? 'bg-yellow-100 text-yellow-800' :
-                        booking.status === 'waiting-room' ? 'bg-orange-100 text-orange-800' :
-                        booking.status === 'in-call' ? 'bg-purple-100 text-purple-800' :
-                        booking.status === 'cancelled' ? 'bg-red-100 text-red-800' :
-                        'bg-gray-100 text-gray-800'
-                      }`}>
-                        {booking.status.replace('-', ' ')}
-                      </span>
-                      <span className={`px-2 py-1 rounded-full text-xs font-medium ${
-                        booking.booking_type === 'online' ? 'bg-emerald-100 text-emerald-800' :
-                        'bg-indigo-100 text-indigo-800'
-                      }`}>
-                        {booking.booking_type === 'online' ? 'Online' : 'In-Person'}
-                      </span>
-                    </div>
-                  </div>
+                  <PatientTelehealthCard
+                    key={booking.id}
+                    booking={booking}
+                    isPatientView={true}
+                    showActions={booking.booking_type === 'online'}
+                  />
                 ))}
                 {myBookings.length > 5 && (
                   <div className="text-center pt-4">

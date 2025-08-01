@@ -7,23 +7,79 @@ import { Button } from '@/components/ui/button'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { BookingWithPatient } from '@/lib/database.types'
 import { useBookings } from '@/hooks/useBookings'
+import { 
+  CalendarIcon, 
+  ClockIcon, 
+  UserIcon, 
+  PhoneIcon, 
+  MailIcon,
+  MapPinIcon,
+  FileTextIcon,
+  VideoIcon,
+  BuildingIcon,
+  CheckCircleIcon,
+  XCircleIcon,
+  AlertCircleIcon
+} from 'lucide-react'
 
 interface BookingCardProps {
   booking: BookingWithPatient
 }
 
-const statusColors = {
-  'pending': 'bg-yellow-100 text-yellow-800',
-  'confirmed': 'bg-blue-100 text-blue-800',
-  'waiting-room': 'bg-purple-100 text-purple-800',
-  'in-call': 'bg-green-100 text-green-800',
-  'completed': 'bg-gray-100 text-gray-800',
-  'cancelled': 'bg-red-100 text-red-800'
+const statusConfig = {
+  'pending': { 
+    color: 'bg-amber-50 text-amber-700 border-amber-200', 
+    icon: AlertCircleIcon,
+    bgGradient: 'from-amber-50 to-amber-100'
+  },
+  'confirmed': { 
+    color: 'bg-blue-50 text-blue-700 border-blue-200', 
+    icon: CheckCircleIcon,
+    bgGradient: 'from-blue-50 to-blue-100'
+  },
+  'intake': { 
+    color: 'bg-purple-50 text-purple-700 border-purple-200', 
+    icon: FileTextIcon,
+    bgGradient: 'from-purple-50 to-purple-100'
+  },
+  'ready-for-provider': { 
+    color: 'bg-green-50 text-green-700 border-green-200', 
+    icon: CheckCircleIcon,
+    bgGradient: 'from-green-50 to-green-100'
+  },
+  'provider': { 
+    color: 'bg-orange-50 text-orange-700 border-orange-200', 
+    icon: VideoIcon,
+    bgGradient: 'from-orange-50 to-orange-100'
+  },
+  'ready-for-discharge': { 
+    color: 'bg-indigo-50 text-indigo-700 border-indigo-200', 
+    icon: CheckCircleIcon,
+    bgGradient: 'from-indigo-50 to-indigo-100'
+  },
+  'discharged': { 
+    color: 'bg-gray-50 text-gray-700 border-gray-200', 
+    icon: CheckCircleIcon,
+    bgGradient: 'from-gray-50 to-gray-100'
+  },
+  'cancelled': { 
+    color: 'bg-red-50 text-red-700 border-red-200', 
+    icon: XCircleIcon,
+    bgGradient: 'from-red-50 to-red-100'
+  }
 }
 
-const typeColors = {
-  'pre-booked': 'bg-indigo-100 text-indigo-800',
-  'online': 'bg-emerald-100 text-emerald-800'
+const typeConfig = {
+  'pre-booked': { 
+    color: 'bg-indigo-50 text-indigo-700 border-indigo-200', 
+    icon: BuildingIcon,
+    label: 'In-Person'
+  },
+  'online': { 
+    color: 'bg-emerald-50 text-emerald-700 border-emerald-200', 
+    icon: VideoIcon,
+    label: 'Telehealth'
+  }
 }
 
 export default function BookingCard({ booking }: BookingCardProps) {
@@ -67,107 +123,222 @@ export default function BookingCard({ booking }: BookingCardProps) {
     }
   }
 
+  const StatusIcon = statusConfig[booking.status]?.icon || AlertCircleIcon
+  const TypeIcon = typeConfig[booking.booking_type]?.icon || BuildingIcon
+  const statusStyle = statusConfig[booking.status] || statusConfig['pending']
+  const typeStyle = typeConfig[booking.booking_type] || typeConfig['pre-booked']
+
+  const formatDate = (date: string) => {
+    return new Date(date).toLocaleDateString('en-US', {
+      weekday: 'short',
+      month: 'short',
+      day: 'numeric',
+      year: 'numeric'
+    })
+  }
+
+  const formatTime = (time: string) => {
+    return new Date(`1970-01-01T${time}`).toLocaleTimeString('en-US', {
+      hour: 'numeric',
+      minute: '2-digit',
+      hour12: true
+    })
+  }
+
   return (
-    <Card className="w-full">
-      <CardHeader className="pb-3">
+    <Card className={`w-full hover:shadow-lg transition-all duration-300 border-l-4 border-l-blue-500 bg-gradient-to-br ${statusStyle.bgGradient} backdrop-blur-sm`}>
+      <CardHeader className="pb-4">
         <div className="flex justify-between items-start">
-          <div>
-            <CardTitle className="text-lg">{booking.patient.full_name}</CardTitle>
-            <p className="text-sm text-gray-600 mt-1">{booking.patient.email}</p>
-            {booking.patient.phone && (
-              <p className="text-sm text-gray-600">{booking.patient.phone}</p>
-            )}
+          <div className="flex items-start space-x-4">
+            {/* Patient Avatar */}
+            <div className="w-12 h-12 bg-gradient-to-br from-blue-500 to-blue-600 rounded-full flex items-center justify-center shadow-lg">
+              <UserIcon className="w-6 h-6 text-white" />
+            </div>
+            
+            {/* Patient Info */}
+            <div className="flex-1">
+              <CardTitle className="text-xl font-bold text-gray-800 mb-1">
+                {booking.patient.full_name}
+              </CardTitle>
+              
+              <div className="space-y-1">
+                <div className="flex items-center text-sm text-gray-600">
+                  <MailIcon className="w-4 h-4 mr-2 text-gray-400" />
+                  {booking.patient.email}
+                </div>
+                
+                {booking.patient.phone && (
+                  <div className="flex items-center text-sm text-gray-600">
+                    <PhoneIcon className="w-4 h-4 mr-2 text-gray-400" />
+                    {booking.patient.phone}
+                  </div>
+                )}
+                
+                {booking.patient.date_of_birth && (
+                  <div className="flex items-center text-sm text-gray-600">
+                    <CalendarIcon className="w-4 h-4 mr-2 text-gray-400" />
+                    DOB: {new Date(booking.patient.date_of_birth).toLocaleDateString()}
+                  </div>
+                )}
+              </div>
+            </div>
           </div>
-          <div className="flex gap-2">
-            <Badge className={statusColors[booking.status] || 'bg-gray-100 text-gray-800'}>
-              {booking.status.replace('-', ' ')}
+          
+          {/* Status and Type Badges */}
+          <div className="flex flex-col gap-2">
+            <Badge className={`${statusStyle.color} px-3 py-1 font-medium shadow-sm`}>
+              <StatusIcon className="w-3 h-3 mr-1" />
+              {booking.status.replace('-', ' ').toUpperCase()}
             </Badge>
-            <Badge className={typeColors[booking.booking_type] || 'bg-gray-100 text-gray-800'}>
-              {booking.booking_type}
+            <Badge className={`${typeStyle.color} px-3 py-1 font-medium shadow-sm`}>
+              <TypeIcon className="w-3 h-3 mr-1" />
+              {typeStyle.label}
             </Badge>
           </div>
         </div>
       </CardHeader>
 
-      <CardContent className="space-y-4">
+      <CardContent className="space-y-6">
         {/* Appointment Details */}
-        <div className="space-y-2">
-          <div className="flex justify-between text-sm">
-            <span className="font-medium">Date:</span>
-            <span>{new Date(booking.appointment_date).toLocaleDateString('en-US', {
-              weekday: 'short',
-              month: 'short',
-              day: 'numeric',
-              year: 'numeric'
-            })}</span>
+        <div className="bg-white/60 rounded-lg p-4 space-y-3 shadow-sm">
+          <h4 className="font-semibold text-gray-800 flex items-center">
+            <CalendarIcon className="w-4 h-4 mr-2 text-blue-500" />
+            Appointment Details
+          </h4>
+          
+          <div className="grid grid-cols-2 gap-4">
+            <div className="flex items-center">
+              <CalendarIcon className="w-4 h-4 mr-2 text-gray-400" />
+              <div>
+                <p className="text-xs text-gray-500">Date</p>
+                <p className="text-sm font-medium">{formatDate(booking.appointment_date)}</p>
+              </div>
+            </div>
+            
+            <div className="flex items-center">
+              <ClockIcon className="w-4 h-4 mr-2 text-gray-400" />
+              <div>
+                <p className="text-xs text-gray-500">Time</p>
+                <p className="text-sm font-medium">{formatTime(booking.appointment_time)}</p>
+              </div>
+            </div>
           </div>
-          <div className="flex justify-between text-sm">
-            <span className="font-medium">Time:</span>
-            <span>{new Date(`1970-01-01T${booking.appointment_time}`).toLocaleTimeString('en-US', {
-              hour: 'numeric',
-              minute: '2-digit',
-              hour12: true
-            })}</span>
-          </div>
+
+          {/* Additional Telehealth Info */}
+          {booking.booking_type === 'online' && (
+            <div className="mt-3 pt-3 border-t border-gray-200">
+              {booking.provider_name && (
+                <div className="flex items-center mb-2">
+                  <UserIcon className="w-4 h-4 mr-2 text-gray-400" />
+                  <div>
+                    <p className="text-xs text-gray-500">Provider</p>
+                    <p className="text-sm font-medium">{booking.provider_name}</p>
+                  </div>
+                </div>
+              )}
+              
+              {booking.chief_complaint && (
+                <div className="flex items-start">
+                  <FileTextIcon className="w-4 h-4 mr-2 text-gray-400 mt-0.5" />
+                  <div>
+                    <p className="text-xs text-gray-500">Chief Complaint</p>
+                    <p className="text-sm text-gray-700">{booking.chief_complaint}</p>
+                  </div>
+                </div>
+              )}
+            </div>
+          )}
+
           {booking.notes && (
-            <div className="text-sm">
-              <span className="font-medium">Notes:</span>
-              <p className="text-gray-600 mt-1">{booking.notes}</p>
+            <div className="mt-3 pt-3 border-t border-gray-200">
+              <div className="flex items-start">
+                <FileTextIcon className="w-4 h-4 mr-2 text-gray-400 mt-0.5" />
+                <div>
+                  <p className="text-xs text-gray-500">Notes</p>
+                  <p className="text-sm text-gray-700">{booking.notes}</p>
+                </div>
+              </div>
             </div>
           )}
         </div>
 
-        {/* Status Update */}
-        <div className="space-y-2">
-          <label className="text-sm font-medium">Status:</label>
-          <Select
-            value={booking.status}
-            onValueChange={handleStatusChange}
-            disabled={isUpdating}
-          >
-            <SelectTrigger>
-              <SelectValue />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="pending">Pending</SelectItem>
-              <SelectItem value="confirmed">Confirmed</SelectItem>
-              <SelectItem value="waiting-room">Waiting Room</SelectItem>
-              <SelectItem value="in-call">In Call</SelectItem>
-              <SelectItem value="completed">Completed</SelectItem>
-              <SelectItem value="cancelled">Cancelled</SelectItem>
-            </SelectContent>
-          </Select>
+        {/* Status Update Controls */}
+        <div className="bg-white/60 rounded-lg p-4 space-y-3 shadow-sm">
+          <h4 className="font-semibold text-gray-800">Quick Actions</h4>
+          
+          <div className="grid grid-cols-2 gap-3">
+            <div>
+              <label className="text-xs text-gray-500 mb-1 block">Status</label>
+              <Select
+                value={booking.status}
+                onValueChange={handleStatusChange}
+                disabled={isUpdating}
+              >
+                <SelectTrigger className="w-full">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="pending">Pending</SelectItem>
+                  <SelectItem value="confirmed">Confirmed</SelectItem>
+                  <SelectItem value="intake">Intake</SelectItem>
+                  <SelectItem value="ready-for-provider">Ready for Provider</SelectItem>
+                  <SelectItem value="provider">Provider</SelectItem>
+                  <SelectItem value="ready-for-discharge">Ready for Discharge</SelectItem>
+                  <SelectItem value="discharged">Discharged</SelectItem>
+                  <SelectItem value="cancelled">Cancelled</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+
+            <div>
+              <label className="text-xs text-gray-500 mb-1 block">Type</label>
+              <Select
+                value={booking.booking_type}
+                onValueChange={handleTypeChange}
+                disabled={isUpdating}
+              >
+                <SelectTrigger className="w-full">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="pre-booked">In-Person</SelectItem>
+                  <SelectItem value="online">Telehealth</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+          </div>
+
+          <div className="flex gap-2 pt-2">
+            <Button
+              onClick={handleDelete}
+              variant="destructive"
+              size="sm"
+              disabled={isUpdating}
+              className="flex-1"
+            >
+              <XCircleIcon className="w-4 h-4 mr-1" />
+              Delete
+            </Button>
+            
+            {booking.booking_type === 'online' && booking.status === 'provider' && (
+              <Button
+                onClick={() => window.open(`/video-call/${booking.id}`, '_blank')}
+                size="sm" 
+                className="flex-1 bg-green-600 hover:bg-green-700"
+              >
+                <VideoIcon className="w-4 h-4 mr-1" />
+                Join Call
+              </Button>
+            )}
+          </div>
         </div>
 
-        {/* Type Update */}
-        <div className="space-y-2">
-          <label className="text-sm font-medium">Type:</label>
-          <Select
-            value={booking.booking_type}
-            onValueChange={handleTypeChange}
-            disabled={isUpdating}
-          >
-            <SelectTrigger>
-              <SelectValue />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="pre-booked">Pre-booked</SelectItem>
-              <SelectItem value="online">Online</SelectItem>
-            </SelectContent>
-          </Select>
-        </div>
-
-        {/* Actions */}
-        <div className="flex gap-2 pt-2">
-          <Button
-            variant="destructive"
-            size="sm"
-            onClick={handleDelete}
-            disabled={isUpdating}
-            className="flex-1"
-          >
-            {isUpdating ? 'Updating...' : 'Delete'}
-          </Button>
+        {/* Timestamps */}
+        <div className="text-xs text-gray-500 border-t pt-3">
+          <div className="flex justify-between">
+            <span>Created: {new Date(booking.created_at).toLocaleString()}</span>
+            <span>Updated: {new Date(booking.updated_at).toLocaleString()}</span>
+          </div>
         </div>
       </CardContent>
     </Card>

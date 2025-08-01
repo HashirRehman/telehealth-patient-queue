@@ -59,9 +59,13 @@ export type Database = {
           appointment_date: string
           appointment_time: string
           booking_type: 'pre-booked' | 'online'
-          status: 'pending' | 'confirmed' | 'waiting-room' | 'in-call' | 'completed' | 'cancelled'
+          status: 'pending' | 'confirmed' | 'intake' | 'ready-for-provider' | 'provider' | 'ready-for-discharge' | 'discharged' | 'cancelled'
           notes: string | null
           created_by: string
+          provider_name: string | null
+          chief_complaint: string | null
+          room_location: string | null
+          is_adhoc: boolean
         }
         Insert: {
           id?: string
@@ -71,9 +75,13 @@ export type Database = {
           appointment_date: string
           appointment_time: string
           booking_type?: 'pre-booked' | 'online'
-          status?: 'pending' | 'confirmed' | 'waiting-room' | 'in-call' | 'completed' | 'cancelled'
+          status?: 'pending' | 'confirmed' | 'intake' | 'ready-for-provider' | 'provider' | 'ready-for-discharge' | 'discharged' | 'cancelled'
           notes?: string | null
           created_by: string
+          provider_name?: string | null
+          chief_complaint?: string | null
+          room_location?: string | null
+          is_adhoc?: boolean
         }
         Update: {
           id?: string
@@ -83,9 +91,13 @@ export type Database = {
           appointment_date?: string
           appointment_time?: string
           booking_type?: 'pre-booked' | 'online'
-          status?: 'pending' | 'confirmed' | 'waiting-room' | 'in-call' | 'completed' | 'cancelled'
+          status?: 'pending' | 'confirmed' | 'intake' | 'ready-for-provider' | 'provider' | 'ready-for-discharge' | 'discharged' | 'cancelled'
           notes?: string | null
           created_by?: string
+          provider_name?: string | null
+          chief_complaint?: string | null
+          room_location?: string | null
+          is_adhoc?: boolean
         }
       }
     }
@@ -97,7 +109,7 @@ export type Database = {
     }
     Enums: {
       booking_type: 'pre-booked' | 'online'
-      booking_status: 'pending' | 'confirmed' | 'waiting-room' | 'in-call' | 'completed' | 'cancelled'
+      booking_status: 'pending' | 'confirmed' | 'intake' | 'ready-for-provider' | 'provider' | 'ready-for-discharge' | 'discharged' | 'cancelled'
     }
   }
 }
@@ -117,4 +129,15 @@ export type BookingWithPatient = Booking & {
 
 export type PatientWithBookings = Patient & {
   bookings: Booking[]
+}
+
+// Telehealth Queue specific types
+export type TelehealthStatus = 'pending' | 'confirmed' | 'intake' | 'ready-for-provider' | 'provider' | 'ready-for-discharge' | 'discharged' | 'cancelled'
+
+export type QueueTab = 'pre-booked' | 'in-office' | 'completed'
+
+export type QueueFilters = {
+  statuses: TelehealthStatus[]
+  providerName: string | null
+  patientNameSearch: string
 } 
