@@ -29,4 +29,5 @@ export { NotificationSystem } from './telehealth/NotificationSystem'
 // Common Components
 export { StatusBadge } from './common/StatusBadge'
 export { LoadingSpinner } from './common/LoadingSpinner'
-export { EmptyState } from './common/EmptyState' 
+export { EmptyState } from './common/EmptyState'
+export { ConfirmDialog } from './common/ConfirmDialog' 

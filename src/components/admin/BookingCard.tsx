@@ -7,6 +7,7 @@ import { Button } from '@/components/ui/button'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { BookingWithPatient } from '@/lib/database.types'
 import { useBookings } from '@/hooks/useBookings'
+import { ConfirmDialog } from '@/components/common/ConfirmDialog'
 import { 
   CalendarIcon, 
   ClockIcon, 
@@ -83,9 +84,13 @@ const typeConfig = {
 
 export default function BookingCard({ booking }: BookingCardProps) {
   const [isUpdating, setIsUpdating] = useState(false)
+  const [isDeleting, setIsDeleting] = useState(false)
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false)
   const { updateBookingStatus, updateBookingType, deleteBooking } = useBookings()
 
   const handleStatusChange = async (newStatus: BookingWithPatient['status']) => {
+    if (isUpdating || isDeleting) return // Prevent concurrent operations
+    
     setIsUpdating(true)
     try {
       await updateBookingStatus(booking.id, newStatus)
@@ -97,6 +102,8 @@ export default function BookingCard({ booking }: BookingCardProps) {
   }
 
   const handleTypeChange = async (newType: BookingWithPatient['booking_type']) => {
+    if (isUpdating || isDeleting) return // Prevent concurrent operations
+    
     setIsUpdating(true)
     try {
       await updateBookingType(booking.id, newType)
@@ -107,19 +114,54 @@ export default function BookingCard({ booking }: BookingCardProps) {
     }
   }
 
-  const handleDelete = async () => {
-    if (!confirm('Are you sure you want to delete this booking?')) {
-      return
-    }
+  const handleDeleteClick = () => {
+    if (isDeleting || isUpdating) return // Prevent actions during operations
+    setShowDeleteConfirm(true)
+  }
 
-    setIsUpdating(true)
+  const handleDeleteConfirm = async (): Promise<void> => {
+    if (isDeleting || isUpdating) return // Prevent double execution
+    
+    setIsDeleting(true)
     try {
       await deleteBooking(booking.id)
+      // Success - close dialog and card will be removed automatically via optimistic updates
+      setShowDeleteConfirm(false)
     } catch (error) {
       console.error('Error deleting booking:', error)
+      
+      // Extract meaningful error message
+      let errorMessage = 'An unexpected error occurred'
+      if (error && typeof error === 'object') {
+        if ('message' in error && typeof error.message === 'string') {
+          errorMessage = error.message
+        } else if ('error' in error && typeof error.error === 'string') {
+          errorMessage = error.error
+        }
+      } else if (typeof error === 'string') {
+        errorMessage = error
+      }
+      
+      // Show user-friendly error and keep dialog open
+      alert(`Failed to delete booking: ${errorMessage}\n\nPlease try again or contact support if the problem persists.`)
+      throw error // Re-throw to prevent dialog from closing
     } finally {
-      setIsUpdating(false)
+      setIsDeleting(false)
     }
+  }
+
+  const getStatusLabel = (status: string) => {
+    const labels: Record<string, string> = {
+      'pending': 'Pending',
+      'confirmed': 'Confirmed',
+      'intake': 'In Intake',
+      'ready-for-provider': 'Ready',
+      'provider': 'In Call',
+      'ready-for-discharge': 'Ready to Discharge',
+      'discharged': 'Discharged',
+      'cancelled': 'Cancelled'
+    }
+    return labels[status] || status.replace(/-/g, ' ').replace(/\b\w/g, l => l.toUpperCase())
   }
 
   const StatusIcon = statusConfig[booking.status]?.icon || AlertCircleIcon
@@ -181,14 +223,14 @@ export default function BookingCard({ booking }: BookingCardProps) {
             </div>
           </div>
           
-          <div className="flex flex-col gap-2">
-            <Badge className={`${statusStyle.color} px-3 py-1 font-medium shadow-sm`}>
-              <StatusIcon className="w-3 h-3 mr-1" />
-              {booking.status.replace('-', ' ').toUpperCase()}
+          <div className="flex flex-col gap-2 items-end">
+            <Badge className={`${statusStyle.color} px-2 py-1 text-xs font-medium shadow-sm whitespace-nowrap`}>
+              <StatusIcon className="w-3 h-3 mr-1 flex-shrink-0" />
+              <span className="truncate">{getStatusLabel(booking.status)}</span>
             </Badge>
-            <Badge className={`${typeStyle.color} px-3 py-1 font-medium shadow-sm`}>
-              <TypeIcon className="w-3 h-3 mr-1" />
-              {typeStyle.label}
+            <Badge className={`${typeStyle.color} px-2 py-1 text-xs font-medium shadow-sm whitespace-nowrap`}>
+              <TypeIcon className="w-3 h-3 mr-1 flex-shrink-0" />
+              <span className="truncate">{typeStyle.label}</span>
             </Badge>
           </div>
         </div>
@@ -265,7 +307,7 @@ export default function BookingCard({ booking }: BookingCardProps) {
               <Select
                 value={booking.status}
                 onValueChange={handleStatusChange}
-                disabled={isUpdating}
+                disabled={isUpdating || isDeleting}
               >
                 <SelectTrigger className="w-full">
                   <SelectValue />
@@ -288,7 +330,7 @@ export default function BookingCard({ booking }: BookingCardProps) {
               <Select
                 value={booking.booking_type}
                 onValueChange={handleTypeChange}
-                disabled={isUpdating}
+                disabled={isUpdating || isDeleting}
               >
                 <SelectTrigger className="w-full">
                   <SelectValue />
@@ -303,14 +345,14 @@ export default function BookingCard({ booking }: BookingCardProps) {
 
           <div className="flex gap-2 pt-2">
             <Button
-              onClick={handleDelete}
+              onClick={handleDeleteClick}
               variant="destructive"
               size="sm"
-              disabled={isUpdating}
+              disabled={isUpdating || isDeleting}
               className="flex-1"
             >
               <XCircleIcon className="w-4 h-4 mr-1" />
-              Delete
+              {isDeleting ? 'Deleting...' : 'Delete'}
             </Button>
             
             {booking.booking_type === 'online' && booking.status === 'provider' && (
@@ -333,6 +375,22 @@ export default function BookingCard({ booking }: BookingCardProps) {
           </div>
         </div>
       </CardContent>
+
+      <ConfirmDialog
+        isOpen={showDeleteConfirm}
+        onClose={() => {
+          if (!isDeleting) { // Only allow closing if not actively deleting
+            setShowDeleteConfirm(false)
+          }
+        }}
+        onConfirm={handleDeleteConfirm}
+        title="Delete Booking"
+        description={`Are you sure you want to delete this booking for ${booking.patient.full_name}? This action cannot be undone.`}
+        confirmText="Delete Booking"
+        cancelText="Cancel"
+        variant="destructive"
+        isLoading={isDeleting}
+      />
     </Card>
   )
 } 
